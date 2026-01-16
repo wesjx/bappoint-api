@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.OperatingHours;
 
 import com.wesleysilva.bappoint.Settings.SettingsModel;
+import com.wesleysilva.bappoint.enums.WeekDay;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,10 +24,9 @@ public class OperatingHoursModel {
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;
 
-//    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(name = "weekday", nullable = false)
-//    private Weekday weekday;
-    private String weekday; //Should be an ENUM
+    private WeekDay weekday;
 
     Boolean active;
 

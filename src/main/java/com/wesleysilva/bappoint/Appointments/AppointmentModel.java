@@ -2,6 +2,7 @@ package com.wesleysilva.bappoint.Appointments;
 
 import com.wesleysilva.bappoint.Company.CompanyModel;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +42,6 @@ public class AppointmentModel {
 
     private double totalAmount;
 
-    private String status;  //Should be an ENUM
+    private AppointmentStatus status;
 
 }
