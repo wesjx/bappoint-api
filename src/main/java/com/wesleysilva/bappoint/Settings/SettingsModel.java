@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "settings")
 @Data
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class SettingsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    private UUID id;
 
     @OneToOne
     @JoinColumn(name = "company_id")
