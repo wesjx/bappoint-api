@@ -68,4 +68,18 @@ public class CompanyController {
         }
     }
 
+    @PutMapping("edit/{id}")
+    @Operation(
+            summary = "",
+            description = ""
+    )
+    public ResponseEntity<?> editCompany(@RequestBody CompanyDTO companyDTO, @PathVariable UUID id) {
+        CompanyDTO company = companyService.updateCompany(id, companyDTO);
+        if (company != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(company);
+        } else  {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }
