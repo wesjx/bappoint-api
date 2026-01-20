@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController  // ← MOVER para cima
+@RestController
 @RequestMapping("/company")
-@Tag(name = "dev/Companies", description = "Manage company details")
+@Tag(name = "dev/Company", description = "Manage company details")
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -54,15 +54,15 @@ public class CompanyController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "",
             description = ""
     )
-    public ResponseEntity<String> deleteCompany(@RequestBody UUID id) {
+    public ResponseEntity<String> deleteCompany(@PathVariable UUID id) {
         if(companyService.getCompanyById(id) != null) {
             companyService.deleteCompany(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            return ResponseEntity.ok("Company id: " + id + " delete successfully.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

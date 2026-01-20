@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.Company;
 
+import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,7 @@ public class CompanyDTO {
     private String email;
     private String phone;
     private String address;
+
+    private SettingsDTO settings;
 
 }

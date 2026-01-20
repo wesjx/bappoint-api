@@ -1,5 +1,7 @@
 package com.wesleysilva.bappoint.Company;
 
+import com.wesleysilva.bappoint.Settings.SettingsDTO;
+import com.wesleysilva.bappoint.Settings.SettingsModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,4 +32,9 @@ public class CompanyModel {
 
     @Column
     private String address;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "settings")
+    private SettingsModel settings;
+
 }
