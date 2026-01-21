@@ -1,6 +1,5 @@
 package com.wesleysilva.bappoint.Settings;
 
-import com.wesleysilva.bappoint.Company.CompanyModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

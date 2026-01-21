@@ -1,6 +1,5 @@
 package com.wesleysilva.bappoint.Settings;
 
-import com.wesleysilva.bappoint.Company.CompanyModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
