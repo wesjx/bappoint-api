@@ -1,6 +1,5 @@
 package com.wesleysilva.bappoint.Services;
 
-import com.wesleysilva.bappoint.Company.CompanyModel;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,8 +20,8 @@ public class ServiceModel {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
-    private CompanyModel company;
+    @JoinColumn(name = "settings_id")
+    private SettingsModel settings;
 
     String name;
     Integer price;

@@ -34,9 +34,6 @@ public class CompanyModel {
     @Column
     private String address;
 
-    @OneToMany(mappedBy = "company")
-    private List<ServiceModel> services;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;

@@ -1,10 +1,13 @@
 package com.wesleysilva.bappoint.Settings;
 
+import com.wesleysilva.bappoint.Services.ServiceModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,4 +23,7 @@ public class SettingsModel {
     private Integer appointment_interval;
 
     private Integer max_cancellation_interval;
+
+    @OneToMany(mappedBy = "settings", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ServiceModel> services = new ArrayList<>();
 }

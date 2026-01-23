@@ -1,12 +1,10 @@
 package com.wesleysilva.bappoint.Company;
 
-import com.wesleysilva.bappoint.Services.ServiceDTO;
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -21,5 +19,5 @@ public class CompanyDTO {
     private String address;
 
     private SettingsDTO settings;
-    private List<ServiceDTO> services;
+
 }

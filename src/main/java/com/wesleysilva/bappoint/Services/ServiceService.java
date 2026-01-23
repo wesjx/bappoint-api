@@ -1,7 +1,7 @@
 package com.wesleysilva.bappoint.Services;
 
-import com.wesleysilva.bappoint.Company.CompanyModel;
-import com.wesleysilva.bappoint.Company.CompanyRepository;
+import com.wesleysilva.bappoint.Settings.SettingsModel;
+import com.wesleysilva.bappoint.Settings.SettingsRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,32 +13,41 @@ import java.util.stream.Collectors;
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
-    private final CompanyRepository companyRepository;
+    private final SettingsRepository settingsRepository;
     private final ServiceMapper serviceMapper;
 
-    public ServiceService(ServiceRepository serviceRepository, CompanyRepository companyRepository, ServiceMapper serviceMapper) {
+    public ServiceService(ServiceRepository serviceRepository,
+                          SettingsRepository settingsRepository,
+                          ServiceMapper serviceMapper) {
         this.serviceRepository = serviceRepository;
-        this.companyRepository = companyRepository;
+        this.settingsRepository = settingsRepository;
         this.serviceMapper = serviceMapper;
     }
 
-    public ServiceDTO createService(ServiceDTO serviceDTO) {
-        ServiceModel serviceModel = serviceMapper.map(serviceDTO);
+    public ServiceDTO createService(UUID settingsId, ServiceDTO serviceDTO) {
 
-        CompanyModel companyId = companyRepository
-                .findById(serviceDTO.getCompany_id())
-                .orElseThrow(() -> new RuntimeException("Company not found")); //To get settings ID
+        ServiceModel serviceModel = serviceMapper.toEntityWithoutSettings(serviceDTO);
 
-        serviceModel.setCompany(companyId); //Set ID of settings into the service json
+        SettingsModel settings = settingsRepository
+                .findById(settingsId)
+                .orElseThrow(() -> new RuntimeException("Settings not found"));
+
+        serviceModel.setSettings(settings);
 
         serviceModel = serviceRepository.save(serviceModel);
 
         return serviceMapper.map(serviceModel);
     }
 
-    public List<ServiceDTO> listServices() {
-        List<ServiceModel> serviceModels = serviceRepository.findAll();
+    public List<ServiceDTO> listServicesBySettings(UUID settingsId) {
+        List<ServiceModel> serviceModels = serviceRepository.findBySettingsId(settingsId);
+        return serviceModels.stream()
+                .map(serviceMapper::map)
+                .collect(Collectors.toList());
+    }
 
+    public List<ServiceDTO> listAllServices() {
+        List<ServiceModel> serviceModels = serviceRepository.findAll();
         return serviceModels.stream()
                 .map(serviceMapper::map)
                 .collect(Collectors.toList());
@@ -48,23 +57,28 @@ public class ServiceService {
         ServiceModel serviceModel = serviceRepository
                 .findById(serviceId)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
-
         return serviceMapper.map(serviceModel);
     }
 
-    void deleteService(UUID serviceId){
+    public void deleteService(UUID serviceId) {
         serviceRepository.deleteById(serviceId);
     }
 
     public ServiceDTO updateService(UUID serviceId, ServiceDTO serviceDTO) {
-        Optional<ServiceModel> serviceModel = serviceRepository.findById(serviceId);
-        if (serviceModel.isPresent()) {
-            ServiceModel serviceUpdated = serviceMapper.map(serviceDTO);
-            serviceUpdated.setId(serviceId);
-            ServiceModel serviceModelUpdated = serviceRepository.save(serviceUpdated);
-            return serviceMapper.map(serviceModelUpdated);
+        Optional<ServiceModel> existingService = serviceRepository.findById(serviceId);
+
+        if (existingService.isPresent()) {
+            ServiceModel serviceToUpdate = existingService.get();
+
+            serviceToUpdate.setName(serviceDTO.getName());
+            serviceToUpdate.setPrice(serviceDTO.getPrice());
+            serviceToUpdate.setDuration_minutes(serviceDTO.getDuration_minutes());
+            serviceToUpdate.setIs_active(serviceDTO.getIs_active());
+
+            ServiceModel savedService = serviceRepository.save(serviceToUpdate);
+            return serviceMapper.map(savedService);
         }
+
         return null;
     }
-
 }

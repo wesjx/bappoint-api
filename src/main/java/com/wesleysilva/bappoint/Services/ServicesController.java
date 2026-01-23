@@ -1,5 +1,9 @@
 package com.wesleysilva.bappoint.Services;
 
+import com.wesleysilva.bappoint.Company.CompanyModel;
+import com.wesleysilva.bappoint.Company.CompanyRepository;
+import com.wesleysilva.bappoint.Settings.SettingsModel;
+import com.wesleysilva.bappoint.Settings.SettingsRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -15,71 +19,73 @@ import java.util.UUID;
 public class ServicesController {
 
     private final ServiceService serviceService;
+    private final CompanyRepository companyRepository;
 
-    public ServicesController(ServiceService serviceService) {
+    public ServicesController(ServiceService serviceService,
+                              CompanyRepository companyRepository,
+                              SettingsRepository settingsRepository) {
         this.serviceService = serviceService;
+        this.companyRepository = companyRepository;
     }
 
     @PostMapping("/create")
-    @Operation(
-            summary = "",
-            description = ""
-    )
-    public ResponseEntity<String> createService(@PathVariable UUID companyId, @RequestBody ServiceDTO service){
-        service.setCompany_id(companyId);
-        ServiceDTO newService = serviceService.createService(service);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newService.toString());
+    @Operation(summary = "Create service for company", description = "")
+    public ResponseEntity<ServiceDTO> createService(
+            @PathVariable UUID companyId,
+            @RequestBody ServiceDTO service) {
 
+        SettingsModel settings = companyRepository.findById(companyId)
+                .map(CompanyModel::getSettings)
+                .orElseThrow(() -> new RuntimeException("Company or settings not found"));
+
+        ServiceDTO newService = serviceService.createService(settings.getId(), service);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newService);
     }
 
     @GetMapping("/list")
-    @Operation(
-            summary = "",
-            description = ""
-    )
-    public ResponseEntity<List<ServiceDTO>> listServices() {
-        List<ServiceDTO> serviceDTOS = serviceService.listServices();
+    @Operation(summary = "List services for company", description = "")
+    public ResponseEntity<List<ServiceDTO>> listServices(@PathVariable UUID companyId) {
+        SettingsModel settings = companyRepository.findById(companyId)
+                .map(CompanyModel::getSettings)
+                .orElseThrow(() -> new RuntimeException("Company or settings not found"));
+
+        List<ServiceDTO> serviceDTOS = serviceService.listServicesBySettings(settings.getId());
         return ResponseEntity.ok(serviceDTOS);
     }
 
-    @GetMapping("/list/{serviceId}")
-    @Operation(
-            summary = "",
-            description = ""
-    )
-    public ResponseEntity<ServiceDTO> listServicesById(@PathVariable UUID serviceId) {
+    @GetMapping("/{serviceId}")
+    @Operation(summary = "Get service by ID", description = "")
+    public ResponseEntity<ServiceDTO> getServiceById(@PathVariable UUID serviceId) {
         ServiceDTO service = serviceService.getServiceById(serviceId);
         if (service != null) {
             return ResponseEntity.status(HttpStatus.OK).body(service);
-        } else  {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @DeleteMapping("delete/{serviceId}")
-    @Operation(
-            summary = "",
-            description = ""
-    )
-    public ResponseEntity<String> deleteService(@PathVariable UUID serviceId){
-        if(serviceService.getServiceById(serviceId) != null) {
-            serviceService.deleteService(serviceId);
-            return ResponseEntity.ok("Service id: " + serviceId + " delete successfully.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
+    @DeleteMapping("/delete/{serviceId}")
+    @Operation(summary = "Delete service", description = "")
+    public ResponseEntity<String> deleteService(@PathVariable UUID serviceId) {
+        ServiceDTO service = serviceService.getServiceById(serviceId);
+        if (service != null) {
+            serviceService.deleteService(serviceId);
+            return ResponseEntity.ok("Service id: " + serviceId + " deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Service not found");
+        }
+    }
+
     @PutMapping("/update/{serviceId}")
-    @Operation(
-            summary = "",
-            description = ""
-    )
-    public ResponseEntity<ServiceDTO> updateService(@PathVariable UUID serviceId, @RequestBody ServiceDTO service){
-        ServiceDTO company = serviceService.updateService(serviceId, service);
-        if (company != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(company);
-        } else  {
+    @Operation(summary = "Update service", description = "")
+    public ResponseEntity<ServiceDTO> updateService(
+            @PathVariable UUID serviceId,
+            @RequestBody ServiceDTO service) {
+
+        ServiceDTO updatedService = serviceService.updateService(serviceId, service);
+        if (updatedService != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(updatedService);
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
