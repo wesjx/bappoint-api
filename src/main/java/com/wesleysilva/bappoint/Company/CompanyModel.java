@@ -1,12 +1,13 @@
 package com.wesleysilva.bappoint.Company;
 
-import com.wesleysilva.bappoint.Settings.SettingsDTO;
+import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -33,8 +34,11 @@ public class CompanyModel {
     @Column
     private String address;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "settings")
+    @OneToMany(mappedBy = "company")
+    private List<ServiceModel> services;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "settings_id")
     private SettingsModel settings;
 
 }
