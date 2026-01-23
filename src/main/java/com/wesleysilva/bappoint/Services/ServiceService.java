@@ -1,7 +1,7 @@
 package com.wesleysilva.bappoint.Services;
 
-import com.wesleysilva.bappoint.Settings.SettingsModel;
-import com.wesleysilva.bappoint.Settings.SettingsRepository;
+import com.wesleysilva.bappoint.Company.CompanyModel;
+import com.wesleysilva.bappoint.Company.CompanyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,23 +13,23 @@ import java.util.stream.Collectors;
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
-    private final SettingsRepository settingsRepository;
+    private final CompanyRepository companyRepository;
     private final ServiceMapper serviceMapper;
 
-    public ServiceService(ServiceRepository serviceRepository, SettingsRepository settingsRepository, ServiceMapper serviceMapper) {
+    public ServiceService(ServiceRepository serviceRepository, CompanyRepository companyRepository, ServiceMapper serviceMapper) {
         this.serviceRepository = serviceRepository;
-        this.settingsRepository = settingsRepository;
+        this.companyRepository = companyRepository;
         this.serviceMapper = serviceMapper;
     }
 
     public ServiceDTO createService(ServiceDTO serviceDTO) {
         ServiceModel serviceModel = serviceMapper.map(serviceDTO);
 
-        SettingsModel settingsId = settingsRepository
-                .findById(serviceDTO.getSettings_id())
-                .orElseThrow(() -> new RuntimeException("Settings not found")); //To get settings ID
+        CompanyModel companyId = companyRepository
+                .findById(serviceDTO.getCompany_id())
+                .orElseThrow(() -> new RuntimeException("Company not found")); //To get settings ID
 
-        serviceModel.setSettings(settingsId); //Set ID of settings into the service json
+        serviceModel.setCompany(companyId); //Set ID of settings into the service json
 
         serviceModel = serviceRepository.save(serviceModel);
 
