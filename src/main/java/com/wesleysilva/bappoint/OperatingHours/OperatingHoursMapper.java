@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OperatingHoursMapper {
-    public OperatingHoursModel map(OperatingHoursDTO operatingHoursDTO) {
+    public OperatingHoursModel toEntity(OperatingHoursDTO operatingHoursDTO) {
         OperatingHoursModel operatingHoursModel = new OperatingHoursModel();
 
         operatingHoursModel.setId(operatingHoursDTO.getId());
@@ -16,7 +16,7 @@ public class OperatingHoursMapper {
         return operatingHoursModel;
     }
 
-    public OperatingHoursDTO map(OperatingHoursModel operatingHoursModel) {
+    public OperatingHoursDTO toDto(OperatingHoursModel operatingHoursModel) {
         OperatingHoursDTO operatingHoursDTO = new OperatingHoursDTO();
 
         operatingHoursDTO.setId(operatingHoursModel.getId());

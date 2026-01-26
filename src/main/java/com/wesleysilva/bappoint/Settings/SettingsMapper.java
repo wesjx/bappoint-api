@@ -38,7 +38,7 @@ public class SettingsMapper {
         if (settingsDTO.getOperating_hours() != null) {
             List<OperatingHoursModel> operatingHoursModels = settingsDTO.getOperating_hours()
                     .stream()
-                    .map(operatingHoursMapper::map)  // ← SEM circular reference
+                    .map(operatingHoursMapper::toEntity)  // ← SEM circular reference
                     .peek(service -> service.setSettings(settingsModel))
                     .collect(Collectors.toList());
             settingsModel.setOperatingHours(operatingHoursModels);
@@ -64,7 +64,7 @@ public class SettingsMapper {
         if (settingsModel.getOperatingHours() != null) {
             settingsDTO.setOperating_hours(
                     settingsModel.getOperatingHours().stream()
-                            .map(operatingHoursMapper::map)
+                            .map(operatingHoursMapper::toDto)
                             .collect(Collectors.toList())
             );
         }
