@@ -21,6 +21,11 @@ public class OperatingHoursModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    Boolean is_active;
+
+    Date start_date;
+    Date end_date;
+
     @OneToOne
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;
@@ -29,8 +34,4 @@ public class OperatingHoursModel {
     @Column(name = "weekday", nullable = false)
     private WeekDay weekday;
 
-    Boolean active;
-
-    Date start_date;
-    Date end_date;
 }
