@@ -44,11 +44,7 @@ public class ServicesController {
 
     @GetMapping("/list")
     @Operation(summary = "List services for company", description = "")
-    public ResponseEntity<List<ServiceDTO>> listServices(@PathVariable UUID companyId) {
-        SettingsModel settings = companyRepository.findById(companyId)
-                .map(CompanyModel::getSettings)
-                .orElseThrow(() -> new RuntimeException("Company or settings not found"));
-
+    public ResponseEntity<List<ServiceDTO>> listServices() {
         List<ServiceDTO> serviceDTOS = serviceService.listAllServices();
         return ResponseEntity.ok(serviceDTOS);
     }
