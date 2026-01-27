@@ -6,7 +6,6 @@ import com.wesleysilva.bappoint.Services.ServiceMapper;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ public class SettingsMapper {
         if (settingsDTO.getServices() != null) {
             List<ServiceModel> serviceModels = settingsDTO.getServices()
                     .stream()
-                    .map(serviceMapper::toEntity)  // ← SEM circular reference
+                    .map(serviceMapper::toEntity)
                     .peek(service -> service.setSettings(settingsModel))
                     .collect(Collectors.toList());
             settingsModel.setServices(serviceModels);
@@ -38,8 +37,8 @@ public class SettingsMapper {
         if (settingsDTO.getOperating_hours() != null) {
             List<OperatingHoursModel> operatingHoursModels = settingsDTO.getOperating_hours()
                     .stream()
-                    .map(operatingHoursMapper::toEntity)  // ← SEM circular reference
-                    .peek(service -> service.setSettings(settingsModel))
+                    .map(operatingHoursMapper::toEntity)
+                    .peek(operatingHours -> operatingHours.setSettings(settingsModel))
                     .collect(Collectors.toList());
             settingsModel.setOperatingHours(operatingHoursModels);
         }
