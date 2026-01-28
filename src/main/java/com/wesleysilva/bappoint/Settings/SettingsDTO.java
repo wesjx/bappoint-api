@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.Settings;
 
+import com.wesleysilva.bappoint.OffDay.OffDaysDTO;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursDTO;
 import com.wesleysilva.bappoint.Services.ServiceDTO;
 import lombok.AllArgsConstructor;
@@ -23,5 +24,7 @@ public class SettingsDTO {
     private List<ServiceDTO> services;
 
     private List<OperatingHoursDTO>  operating_hours;
+
+    private List<OffDaysDTO>  off_days;
 
 }

@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.Settings;
 
+import com.wesleysilva.bappoint.OffDay.OffDaysModel;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursModel;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import jakarta.persistence.*;
@@ -30,4 +31,7 @@ public class SettingsModel {
 
     @OneToMany(mappedBy = "settings", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OperatingHoursModel> operatingHours = new ArrayList<>();
+
+    @OneToMany(mappedBy = "settings", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OffDaysModel> offDays = new ArrayList<>();
 }

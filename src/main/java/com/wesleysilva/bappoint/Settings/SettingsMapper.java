@@ -1,5 +1,7 @@
 package com.wesleysilva.bappoint.Settings;
 
+import com.wesleysilva.bappoint.OffDay.OffDaysMapper;
+import com.wesleysilva.bappoint.OffDay.OffDaysModel;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursMapper;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursModel;
 import com.wesleysilva.bappoint.Services.ServiceMapper;
@@ -13,10 +15,12 @@ import java.util.stream.Collectors;
 public class SettingsMapper {
     private final ServiceMapper serviceMapper;
     private final OperatingHoursMapper operatingHoursMapper;
+    private final OffDaysMapper offDaysMapper;
 
-    public SettingsMapper(ServiceMapper serviceMapper, OperatingHoursMapper operatingHoursMapper) {
+    public SettingsMapper(ServiceMapper serviceMapper, OperatingHoursMapper operatingHoursMapper, OffDaysMapper offDaysMapper) {
         this.serviceMapper = serviceMapper;
         this.operatingHoursMapper = operatingHoursMapper;
+        this.offDaysMapper = offDaysMapper;
     }
 
     public SettingsModel map(SettingsDTO settingsDTO) {
@@ -43,6 +47,15 @@ public class SettingsMapper {
             settingsModel.setOperatingHours(operatingHoursModels);
         }
 
+        if (settingsDTO.getOff_days() != null) {
+            List<OffDaysModel> offDaysModel = settingsDTO.getOff_days()
+                    .stream()
+                    .map(offDaysMapper::toEntity)
+                    .peek(offDays -> offDays.setSettings(settingsModel))
+                    .collect(Collectors.toList());
+            settingsModel.setOffDays(offDaysModel);
+        }
+
         return settingsModel;
     }
 
@@ -64,6 +77,14 @@ public class SettingsMapper {
             settingsDTO.setOperating_hours(
                     settingsModel.getOperatingHours().stream()
                             .map(operatingHoursMapper::toDto)
+                            .collect(Collectors.toList())
+            );
+        }
+
+        if (settingsModel.getOffDays() != null) {
+            settingsDTO.setOff_days(
+                    settingsModel.getOffDays().stream()
+                            .map(offDaysMapper::toDto)
                             .collect(Collectors.toList())
             );
         }
