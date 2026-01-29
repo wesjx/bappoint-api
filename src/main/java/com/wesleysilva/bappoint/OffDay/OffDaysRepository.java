@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface OffDaysRepository extends JpaRepository<UUID, OffDayModel> {
+public interface OffDaysRepository extends JpaRepository<OffDaysModel, UUID> {
 }

@@ -11,13 +11,13 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name = "off_days")
-public class OffDayModel {
+public class OffDaysModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;
 
@@ -26,5 +26,6 @@ public class OffDayModel {
     private Date date;
 
     @Enumerated(EnumType.STRING)
-    private OffDaysType OffDaystype;
+    @Column(name = "off_days_type")
+    private OffDaysType offDaystype;
 }
