@@ -23,14 +23,6 @@ public class AppointmentModel {
     @Column(name = "appointment_id")
     private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "company_id")
-    private CompanyModel company;
-
-    @OneToOne
-    @JoinColumn(name = "settings_id")
-    private SettingsModel settings;
-
     private String costumerName;
     private String costumerEmail;
     private String costumerPhone;
@@ -42,6 +34,8 @@ public class AppointmentModel {
 
     private double totalAmount;
 
-    private AppointmentStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "appointment_status")
+    private AppointmentStatus appointmentStatus;
 
 }
