@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.Company;
 
+import com.wesleysilva.bappoint.Appointments.AppointmentModel;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import jakarta.persistence.*;
@@ -37,5 +38,9 @@ public class CompanyModel {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;
+
+    @OneToMany
+    @JoinColumn(name = "appointment_id")
+    private List<AppointmentModel> appointments;
 
 }
