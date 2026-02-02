@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,6 +16,6 @@ public class OperatingHoursDTO {
     private UUID id;
     private WeekDay weekday;
     private Boolean is_active;
-    private Date start_date;
-    private Date end_date;
+    private LocalDateTime start_date;
+    private LocalDateTime end_date;
 }
