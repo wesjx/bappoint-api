@@ -4,8 +4,11 @@ import com.wesleysilva.bappoint.Services.ServiceDTO;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import com.wesleysilva.bappoint.Settings.SettingsRepository;
+import com.wesleysilva.bappoint.enums.WeekDay;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,6 +75,22 @@ public class OperatingHoursService {
         }
 
         return null;
+    }
+
+    public OperatingHoursDTO findByDate(String dateStr) {
+        LocalDate date = LocalDate.parse(dateStr);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        WeekDay weekday = WeekDay.valueOf(dayOfWeek.name());
+
+        List<OperatingHoursModel> hours = operatingHoursRepository.findByWeekday(weekday);
+
+        if (hours.isEmpty()) {
+            return null;
+        }
+
+        OperatingHoursModel operatingHours = hours.getFirst();
+
+        return operatingHoursMapper.toDto(operatingHours);
     }
 
 }
