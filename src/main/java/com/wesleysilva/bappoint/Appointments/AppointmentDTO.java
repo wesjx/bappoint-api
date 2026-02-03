@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public class AppointmentDTO {
     private String costumerEmail;
     private String costumerPhone;
 
-    private Date appointmentDate;
+    private LocalDateTime appointmentDate;
 
     private long startTime;
     private long endTime;
