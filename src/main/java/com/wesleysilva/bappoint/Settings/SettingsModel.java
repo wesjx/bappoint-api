@@ -3,6 +3,7 @@ package com.wesleysilva.bappoint.Settings;
 import com.wesleysilva.bappoint.OffDay.OffDaysModel;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursModel;
 import com.wesleysilva.bappoint.Services.ServiceModel;
+import com.wesleysilva.bappoint.enums.AppointmentInterval;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +23,9 @@ public class SettingsModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Integer appointment_interval;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "appointment_interval")
+    private AppointmentInterval appointment_interval;
 
     private Integer max_cancellation_interval;
 

@@ -3,6 +3,7 @@ package com.wesleysilva.bappoint.Settings;
 import com.wesleysilva.bappoint.OffDay.OffDaysDTO;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursDTO;
 import com.wesleysilva.bappoint.Services.ServiceDTO;
+import com.wesleysilva.bappoint.enums.AppointmentInterval;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class SettingsDTO {
 
     private UUID id;
 
-    private Integer appointment_interval;
+    private AppointmentInterval appointment_interval;
 
     private Integer max_cancellation_interval;
 
