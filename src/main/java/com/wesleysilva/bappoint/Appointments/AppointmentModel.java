@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class AppointmentModel {
     private String costumerEmail;
     private String costumerPhone;
 
-    private Date appointmentDate;
+    private LocalDateTime appointmentDate;
 
     private long startTime;
     private long endTime;
@@ -37,5 +38,9 @@ public class AppointmentModel {
     @Enumerated(EnumType.STRING)
     @Column(name = "appointment_status")
     private AppointmentStatus appointmentStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private CompanyModel company;
 
 }
