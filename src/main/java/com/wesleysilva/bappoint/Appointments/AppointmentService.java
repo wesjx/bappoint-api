@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,11 +84,29 @@ public class AppointmentService {
         LocalDateTime from = date.atTime(operatingHours.getStart_time());
         LocalDateTime to = date.atTime(operatingHours.getEnd_time());
 
+        LocalTime lunchStart = operatingHours.getLunch_start_time();
+        LocalTime lunchEnd = operatingHours.getLunch_end_time();
+
         List<SlotTimesDTO> slots = new ArrayList<>();
         LocalDateTime current = from;
 
         while (!current.plusMinutes(intervalMinutes).isAfter(to)) {
             LocalDateTime next = current.plusMinutes(intervalMinutes);
+
+            //skip lunchtime
+            if (lunchStart != null && lunchEnd != null) {
+                LocalDateTime lunchFrom = date.atTime(lunchStart);
+                LocalDateTime lunchTo = date.atTime(lunchEnd);
+
+                boolean intersectsLunch =
+                        current.isBefore(lunchTo) && next.isAfter(lunchFrom);
+
+                if (intersectsLunch) {
+                    current = lunchTo; //go to end of lunch
+                    continue;
+                }
+            }
+
             slots.add(new SlotTimesDTO(current.toString(), next.toString()));
             current = next;
         }
