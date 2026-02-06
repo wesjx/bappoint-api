@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Component
 public class AppointmentMapper {
-    public AppointmentModel toEntity(AppointmentDTO appointmentsDTO) {
+    public AppointmentModel toEntity(AppointmentResponseDTO appointmentsDTO) {
         AppointmentModel appointmentModel = new AppointmentModel();
         appointmentModel.setId(appointmentsDTO.getId());
         appointmentModel.setCostumerName(appointmentsDTO.getCostumerName());
