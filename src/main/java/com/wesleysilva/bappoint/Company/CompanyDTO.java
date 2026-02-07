@@ -1,7 +1,7 @@
 package com.wesleysilva.bappoint.Company;
 
 import com.wesleysilva.bappoint.Appointments.AppointmentDTO;
-import com.wesleysilva.bappoint.Appointments.AppointmentResponseDTO;
+import com.wesleysilva.bappoint.Appointments.AppointmentMapper;
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +22,6 @@ public class CompanyDTO {
     private String address;
 
     private SettingsDTO settings;
-    private List<AppointmentResponseDTO> appointments;
+    private List<AppointmentDTO> appointments;
 
 }

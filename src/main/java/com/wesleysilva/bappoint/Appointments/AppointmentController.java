@@ -100,8 +100,8 @@ public class AppointmentController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<AppointmentResponseDTO>> listAppointments() {
-        List<AppointmentResponseDTO> appointments = appointmentService.listAppointments();
+    public ResponseEntity<List<AppointmentDTO>> listAppointments() {
+        List<AppointmentDTO> appointments = appointmentService.listAppointments();
 
         return ResponseEntity.status(HttpStatus.OK).body(appointments);
     }
@@ -142,8 +142,8 @@ public class AppointmentController {
             @ApiResponse(responseCode = "500", description = "Server error"),
             @ApiResponse(responseCode = "404", description = "Appointment not found")
     })
-    public ResponseEntity<AppointmentResponseDTO> listAppointmentById(@PathVariable UUID appointmentId) {
-        AppointmentResponseDTO appointment = appointmentService.getAppointmentById(appointmentId);
+    public ResponseEntity<AppointmentDTO> listAppointmentById(@PathVariable UUID appointmentId) {
+        AppointmentDTO appointment = appointmentService.getAppointmentById(appointmentId);
         return ResponseEntity.ok(appointment);
     }
 
@@ -186,7 +186,7 @@ public class AppointmentController {
             @ApiResponse(responseCode = "400", description = "Invalid data"),
             @ApiResponse(responseCode = "409", description = "Time slot conflict")
     })
-    public ResponseEntity<AppointmentResponseDTO> createAppointment(@PathVariable UUID companyId, @RequestBody AppointmentDTO appointmentDTO) {
+    public ResponseEntity<AppointmentDTO> createAppointment(@PathVariable UUID companyId, @RequestBody AppointmentDTO appointmentDTO) {
 
         AppointmentModel appointment = appointmentService.createAppointment(appointmentDTO, companyId);
 
@@ -231,8 +231,8 @@ public class AppointmentController {
             @ApiResponse(responseCode = "404", description = "ID not found"),
             @ApiResponse(responseCode = "409", description = "Time slot conflict")
     })
-    public ResponseEntity<?> updateAppointment(@RequestBody AppointmentResponseDTO appointmentResponseDTO, @PathVariable UUID appointmentId) {
-        AppointmentResponseDTO appointment = appointmentService.updateAppointment(appointmentId, appointmentResponseDTO);
+    public ResponseEntity<?> updateAppointment(@RequestBody AppointmentDTO appointmentResponseDTO, @PathVariable UUID appointmentId) {
+        AppointmentDTO appointment = appointmentService.updateAppointment(appointmentId, appointmentResponseDTO);
 
         if (appointment != null) {
             return ResponseEntity.ok(appointment);

@@ -85,14 +85,14 @@ public class AppointmentService {
     }
 
 
-    public List<AppointmentResponseDTO> listAppointments() {
+    public List<AppointmentDTO> listAppointments() {
         List<AppointmentModel> appointments = appointmentRepository.findAll();
         return appointments.stream()
                 .map(appointmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public AppointmentResponseDTO getAppointmentById(UUID appointmentId) {
+    public AppointmentDTO getAppointmentById(UUID appointmentId) {
         AppointmentModel appointment = appointmentRepository.findById(appointmentId).orElseThrow(
                 () -> new RuntimeException("Appointment not found"));
 
@@ -103,7 +103,7 @@ public class AppointmentService {
         appointmentRepository.deleteById(appointmentId);
     }
 
-    public AppointmentResponseDTO updateAppointment(UUID appointmentId, AppointmentResponseDTO appointmentDto) {
+    public AppointmentDTO updateAppointment(UUID appointmentId, AppointmentDTO appointmentDto) {
         Optional<AppointmentModel> existingAppointment = appointmentRepository.findById(appointmentId);
         if (existingAppointment.isPresent()) {
             AppointmentModel appointmentToUpdate = existingAppointment.get();
