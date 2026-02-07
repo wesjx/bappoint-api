@@ -27,15 +27,25 @@ public class AppointmentModel {
     @Column(name = "appointment_id")
     private UUID id;
 
+    @Column(name = "costumer_name")
     private String costumerName;
+
+    @Column(name = "costumer_email")
     private String costumerEmail;
+
+    @Column(name = "costumer_phone")
     private String costumerPhone;
 
+    @Column(name = "appointment_date")
     private LocalDate appointmentDate;
 
+    @Column(name = "start_time")
     private LocalDateTime startTime;
+
+    @Column(name = "end_time")
     private LocalDateTime endTime;
 
+    @Column(name = "total_amount")
     private double totalAmount;
 
     @Enumerated(EnumType.STRING)
