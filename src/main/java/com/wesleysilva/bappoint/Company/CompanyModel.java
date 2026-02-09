@@ -1,7 +1,6 @@
 package com.wesleysilva.bappoint.Company;
 
 import com.wesleysilva.bappoint.Appointments.AppointmentModel;
-import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "company")
+@Table(name = "companies")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,16 +22,16 @@ public class CompanyModel {
     @Column(name = "company_id")
     private UUID id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column
+    @Column(name = "phone")
     private String phone;
 
-    @Column
+    @Column(name = "address")
     private String address;
 
     @OneToOne(cascade = CascadeType.ALL)
