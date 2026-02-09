@@ -1,13 +1,10 @@
 package com.wesleysilva.bappoint.Company;
 
 import com.wesleysilva.bappoint.Appointments.AppointmentMapper;
-import com.wesleysilva.bappoint.Appointments.AppointmentModel;
-import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Settings.SettingsMapper;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
