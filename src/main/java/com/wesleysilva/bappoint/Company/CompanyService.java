@@ -1,5 +1,8 @@
 package com.wesleysilva.bappoint.Company;
 
+import com.wesleysilva.bappoint.Company.dto.CompanyResponseDTO;
+import com.wesleysilva.bappoint.Company.dto.CreateCompanyDTO;
+import com.wesleysilva.bappoint.Company.dto.UpdateCompanyDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,44 +22,41 @@ public class CompanyService {
     }
 
 
-    public CompanyDTO createCompany(CompanyDTO companyDTO) {
-        CompanyModel companyModel = companyMapper.toEntity(companyDTO);
+    public CompanyResponseDTO createCompany(CreateCompanyDTO createCompanyDTO) {
+        CompanyModel companyModel = companyMapper.toCreate(createCompanyDTO);
         companyModel = companyRepository.save(companyModel);
 
-        return companyMapper.toDto(companyModel);
+        return companyMapper.toResponseDTO(companyModel);
     }
 
     @Transactional(readOnly = true)
-    public List<CompanyDTO> listCompanies() {
+    public List<CompanyResponseDTO> listCompanies() {
        List<CompanyModel> companyModel = companyRepository.findAll();
         return companyModel.stream()
-                .map(companyMapper::toDto)
+                .map(companyMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public CompanyDTO getCompanyById(UUID id) {
+    public CompanyResponseDTO getCompanyById(UUID id) {
         CompanyModel companyModel = companyRepository.findById(id).orElse(null);
         assert companyModel != null;
         if (companyModel.getAppointments() != null) {
             companyModel.getAppointments().size();
         }
-        return companyMapper.toDto(companyModel);
+        return companyMapper.toResponseDTO(companyModel);
     }
 
     void deleteCompany(UUID id) {
         companyRepository.deleteById(id);
     }
 
-    public CompanyDTO updateCompany(UUID id, CompanyDTO companyDTO) {
-        Optional<CompanyModel> companyModel = companyRepository.findById(id);
-        if (companyModel.isPresent()) {
-            CompanyModel companyUpdated = companyMapper.toEntity(companyDTO);
-            companyUpdated.setId(id);
-            CompanyModel updatedCompanyModel = companyRepository.save(companyUpdated);
-            return companyMapper.toDto(updatedCompanyModel);
-        }
-        return null;
+    public CompanyResponseDTO updateCompany(UUID companyId, UpdateCompanyDTO updateDTO) {
+        CompanyModel existingCompany = companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        CompanyModel updatedCompany = companyMapper.toUpdateCompany(updateDTO, existingCompany);
+        updatedCompany = companyRepository.save(updatedCompany);
+        return companyMapper.toResponseDTO(updatedCompany);
     }
 
 }
