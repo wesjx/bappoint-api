@@ -1,6 +1,5 @@
 package com.wesleysilva.bappoint.Company.dto;
 
-import com.wesleysilva.bappoint.Appointments.AppointmentDTO;
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -8,15 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompanyResponseDTO {
-
-    private UUID id;
 
     @NotBlank
     @Size(min = 3, max = 100)
@@ -35,6 +29,5 @@ public class CompanyResponseDTO {
     @Valid
     @NotNull
     private SettingsDTO settings;
-    private List<AppointmentDTO> appointments;
 
 }
