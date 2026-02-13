@@ -4,11 +4,11 @@ import com.wesleysilva.bappoint.Company.dto.CompanyDetailsResponseDTO;
 import com.wesleysilva.bappoint.Company.dto.CompanyResponseDTO;
 import com.wesleysilva.bappoint.Company.dto.CreateCompanyDTO;
 import com.wesleysilva.bappoint.Company.dto.UpdateCompanyDTO;
+import com.wesleysilva.bappoint.exceptions.EmailAlreadyExistsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,6 +24,10 @@ public class CompanyService {
 
 
     public CompanyResponseDTO createCompany(CreateCompanyDTO createCompanyDTO) {
+        if (companyRepository.existsEmail(createCompanyDTO.getEmail())) {
+            throw new EmailAlreadyExistsException();
+        }
+
         CompanyModel companyModel = companyMapper.toCreate(createCompanyDTO);
         companyModel = companyRepository.save(companyModel);
 
