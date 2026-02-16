@@ -2,6 +2,8 @@ package com.wesleysilva.bappoint.Appointments;
 
 import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +18,7 @@ public class AppointmentDTO {
     private LocalDate appointmentDate;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private double totalAmount;
+    private BigDecimal totalAmount;
     private AppointmentStatus appointmentStatus;
 
     private List<UUID> serviceIds;

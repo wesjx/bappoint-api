@@ -1,5 +1,8 @@
 package com.wesleysilva.bappoint.Appointments;
 
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentResponseDTO;
+import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
+import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Company.CompanyRepository;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Services.ServiceRepository;
@@ -8,9 +11,11 @@ import com.wesleysilva.bappoint.Settings.SettingsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,16 +36,16 @@ public class AppointmentService {
         this.serviceRepository = serviceRepository;
     }
 
-    public AppointmentModel createAppointment(AppointmentDTO dto, UUID companyId) {
+    public AppointmentModel createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
 
-        LocalDate date = dto.getStartTime().toLocalDate();
+        LocalDate date = appointmentDTO.getStartTime().toLocalDate();
 
         List<AppointmentModel> booked = appointmentRepository.findByAppointmentDateAndCompanyId(date, companyId);
 
         SettingsDTO settings = settingsService.getByCompanyId(companyId);
         UUID settingsId = settings.getId();
 
-        List<ServiceModel> services = dto.getServiceIds().stream()
+        List<ServiceModel> services = appointmentDTO.getServiceIds().stream()
                 .map(id -> serviceRepository.findByIdAndSettingsId(id, settingsId)
                         .orElseThrow(() -> new RuntimeException("Service not found")))
                 .toList();
@@ -49,7 +54,7 @@ public class AppointmentService {
                 .mapToInt(ServiceModel::getDuration_minutes)
                 .sum();
 
-        LocalDateTime start = dto.getStartTime();
+        LocalDateTime start = appointmentDTO.getStartTime();
         LocalDateTime end = start.plusMinutes(totalDuration);
 
         boolean hasConflict = booked.stream().anyMatch(existing ->
@@ -61,9 +66,11 @@ public class AppointmentService {
             throw new IllegalStateException("This slot is already occupied");
         }
 
-        double totalAmount = services.stream()
-                .mapToDouble(ServiceModel::getPrice)
-                .sum();
+        BigDecimal totalAmount = services.stream()
+                .map(ServiceModel::getPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
 
         AppointmentModel appointment = new AppointmentModel();
         appointment.setCompany(
@@ -75,24 +82,24 @@ public class AppointmentService {
         appointment.setStartTime(start);
         appointment.setEndTime(end);
         appointment.setServices(services);
-        appointment.setCostumerName(dto.getCostumerName());
-        appointment.setCostumerEmail(dto.getCostumerEmail());
-        appointment.setCostumerPhone(dto.getCostumerPhone());
+        appointment.setCostumerName(appointmentDTO.getCostumerName());
+        appointment.setCostumerEmail(appointmentDTO.getCostumerEmail());
+        appointment.setCostumerPhone(appointmentDTO.getCostumerPhone());
         appointment.setTotalAmount(totalAmount);
-        appointment.setAppointmentStatus(dto.getAppointmentStatus());
+        appointment.setAppointmentStatus(appointmentDTO.getAppointmentStatus());
 
         return appointmentRepository.save(appointment);
     }
 
 
-    public List<AppointmentDTO> listAppointments() {
+    public List<AppointmentResponseDTO> listAppointments() {
         List<AppointmentModel> appointments = appointmentRepository.findAll();
         return appointments.stream()
                 .map(appointmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public AppointmentDTO getAppointmentById(UUID appointmentId) {
+    public AppointmentResponseDTO getAppointmentById(UUID appointmentId) {
         AppointmentModel appointment = appointmentRepository.findById(appointmentId).orElseThrow(
                 () -> new RuntimeException("Appointment not found"));
 
@@ -103,7 +110,7 @@ public class AppointmentService {
         appointmentRepository.deleteById(appointmentId);
     }
 
-    public AppointmentDTO updateAppointment(UUID appointmentId, AppointmentDTO appointmentDto) {
+    public UpdateAppointmentDTO updateAppointment(UUID appointmentId, UpdateAppointmentDTO appointmentDto) {
         Optional<AppointmentModel> existingAppointment = appointmentRepository.findById(appointmentId);
         if (existingAppointment.isPresent()) {
             AppointmentModel appointmentToUpdate = existingAppointment.get();
@@ -124,7 +131,7 @@ public class AppointmentService {
             appointmentToUpdate.setTotalAmount(appointmentDto.getTotalAmount());
             appointmentToUpdate.setAppointmentStatus(appointmentDto.getAppointmentStatus());
 
-            return appointmentMapper.toResponseDTO(appointmentRepository.save(appointmentToUpdate));
+            return appointmentMapper.toUpdateAppointmentDTO(appointmentRepository.save(appointmentToUpdate));
         }
         return null;
 
