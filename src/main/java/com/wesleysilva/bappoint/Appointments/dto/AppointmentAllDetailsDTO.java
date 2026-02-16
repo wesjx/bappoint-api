@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class AppointmentResponseDTO {
+public class AppointmentAllDetailsDTO {
     private UUID id;
     private String costumerName;
     private String costumerEmail;
