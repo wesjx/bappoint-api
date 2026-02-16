@@ -103,8 +103,8 @@ public class AppointmentController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<AppointmentResponseDTO>> listAppointments() {
-        List<AppointmentResponseDTO> appointments = appointmentService.listAppointments();
+    public ResponseEntity<List<AppointmentResponseDTO>> listAppointments(@RequestParam int page, int itemsPerPage) {
+        List<AppointmentResponseDTO> appointments = appointmentService.listAppointments(page, itemsPerPage);
 
         return ResponseEntity.status(HttpStatus.OK).body(appointments);
     }
