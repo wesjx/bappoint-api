@@ -1,4 +1,4 @@
-package com.wesleysilva.bappoint.Appointments;
+package com.wesleysilva.bappoint.Appointments.dto;
 
 import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class AppointmentDTO {
+public class AppointmentResponseDTO {
     private UUID id;
     private String costumerName;
     private String costumerEmail;
