@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.Appointments;
 
-import com.wesleysilva.bappoint.Appointments.dto.AppointmentResponseDTO;
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentAllDetailsDTO;
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentReponseDTO;
 import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Availability.SlotTimesDTO;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -103,8 +105,8 @@ public class AppointmentController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<AppointmentResponseDTO>> listAppointments(@RequestParam int page, int itemsPerPage) {
-        List<AppointmentResponseDTO> appointments = appointmentService.listAppointments(page, itemsPerPage);
+    public ResponseEntity<List<AppointmentAllDetailsDTO>> listAppointments(@RequestParam int page, int itemsPerPage) {
+        List<AppointmentAllDetailsDTO> appointments = appointmentService.listAppointments(page, itemsPerPage);
 
         return ResponseEntity.status(HttpStatus.OK).body(appointments);
     }
@@ -145,8 +147,8 @@ public class AppointmentController {
             @ApiResponse(responseCode = "500", description = "Server error"),
             @ApiResponse(responseCode = "404", description = "Appointment not found")
     })
-    public ResponseEntity<AppointmentResponseDTO> listAppointmentById(@PathVariable UUID appointmentId) {
-        AppointmentResponseDTO appointment = appointmentService.getAppointmentById(appointmentId);
+    public ResponseEntity<AppointmentAllDetailsDTO> listAppointmentById(@PathVariable UUID appointmentId) {
+        AppointmentAllDetailsDTO appointment = appointmentService.getAppointmentById(appointmentId);
         return ResponseEntity.ok(appointment);
     }
 
@@ -191,9 +193,9 @@ public class AppointmentController {
     })
     public ResponseEntity<CreateAppointmentDTO> createAppointment(@PathVariable UUID companyId, @RequestBody CreateAppointmentDTO appointmentDTO) {
 
-        AppointmentModel appointment = appointmentService.createAppointment(appointmentDTO, companyId);
+        CreateAppointmentDTO appointment = appointmentService.createAppointment(appointmentDTO, companyId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(appointmentMapper.toCreateAppointmentDTO(appointment));
+        return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
     }
 
 
@@ -253,5 +255,12 @@ public class AppointmentController {
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID appointmentId) {
         appointmentService.deleteAppointment(appointmentId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(@PathVariable LocalDate date, UUID companyId) {
+        List<AppointmentReponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(appointments);
     }
 }

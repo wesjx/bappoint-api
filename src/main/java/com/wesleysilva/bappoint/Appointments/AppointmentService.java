@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.Appointments;
 
-import com.wesleysilva.bappoint.Appointments.dto.AppointmentResponseDTO;
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentAllDetailsDTO;
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentReponseDTO;
 import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Company.CompanyRepository;
@@ -38,7 +39,7 @@ public class AppointmentService {
         this.serviceRepository = serviceRepository;
     }
 
-    public AppointmentModel createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
+    public CreateAppointmentDTO createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
 
         LocalDate date = appointmentDTO.getStartTime().toLocalDate();
 
@@ -90,22 +91,23 @@ public class AppointmentService {
         appointment.setTotalAmount(totalAmount);
         appointment.setAppointmentStatus(appointmentDTO.getAppointmentStatus());
 
-        return appointmentRepository.save(appointment);
+        AppointmentModel savedAppointment = appointmentRepository.save(appointment);
+        return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
     }
 
 
-    public List<AppointmentResponseDTO> listAppointments(int page, int itemsPerPage) {
+    public List<AppointmentAllDetailsDTO> listAppointments(int page, int itemsPerPage) {
         Page<AppointmentModel> appointments = appointmentRepository.findAll(PageRequest.of(page, itemsPerPage) );
         return appointments.stream()
-                .map(appointmentMapper::toResponseDTO)
+                .map(appointmentMapper::toResponseAllDetailsDTO)
                 .collect(Collectors.toList());
     }
 
-    public AppointmentResponseDTO getAppointmentById(UUID appointmentId) {
+    public AppointmentAllDetailsDTO getAppointmentById(UUID appointmentId) {
         AppointmentModel appointment = appointmentRepository.findById(appointmentId).orElseThrow(
                 () -> new RuntimeException("Appointment not found"));
 
-        return appointmentMapper.toResponseDTO(appointment);
+        return appointmentMapper.toResponseAllDetailsDTO(appointment);
     }
 
     void deleteAppointment(UUID appointmentId) {
@@ -140,8 +142,12 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentModel> findByCompanyId(UUID companyId) {
-        return appointmentRepository.findByCompanyId(companyId);
+    public List<AppointmentReponseDTO> listAppointmentsByDate(LocalDate date, UUID companyId) {
+        List<AppointmentModel> appointments = appointmentRepository.findByAppointmentDateAndCompanyId(date, companyId);
+
+        return appointments.stream()
+                .map(appointmentMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
 
