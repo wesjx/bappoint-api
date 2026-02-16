@@ -1,5 +1,8 @@
 package com.wesleysilva.bappoint.Appointments;
 
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentResponseDTO;
+import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
+import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -7,8 +10,8 @@ import java.util.Optional;
 
 @Component
 public class AppointmentMapper {
-    public AppointmentDTO toResponseDTO(AppointmentModel appointment) {
-        AppointmentDTO AppointmentDto = new AppointmentDTO();
+    public AppointmentResponseDTO toResponseDTO(AppointmentModel appointment) {
+        AppointmentResponseDTO AppointmentDto = new AppointmentResponseDTO();
         AppointmentDto.setId(appointment.getId());
         AppointmentDto.setCostumerName(appointment.getCostumerName());
         AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
@@ -26,6 +29,49 @@ public class AppointmentMapper {
                 .orElse(List.of()));
 
         AppointmentDto.setCompanyId(appointment.getCompany().getId());
+        return AppointmentDto;
+    }
+
+    public CreateAppointmentDTO toCreateAppointmentDTO(AppointmentModel appointment) {
+        CreateAppointmentDTO AppointmentDto = new CreateAppointmentDTO();
+
+        AppointmentDto.setCostumerName(appointment.getCostumerName());
+        AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        AppointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        AppointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+        AppointmentDto.setStartTime(appointment.getStartTime());
+        AppointmentDto.setEndTime(appointment.getEndTime());
+        AppointmentDto.setTotalAmount(appointment.getTotalAmount());
+        AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+
+        AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+                .map(services -> services.stream()
+                        .map(ServiceModel::getId)
+                        .toList())
+                .orElse(List.of()));
+
+        AppointmentDto.setCompanyId(appointment.getCompany().getId());
+        return AppointmentDto;
+    }
+
+    public UpdateAppointmentDTO toUpdateAppointmentDTO(AppointmentModel appointment) {
+        UpdateAppointmentDTO AppointmentDto = new UpdateAppointmentDTO();
+
+        AppointmentDto.setCostumerName(appointment.getCostumerName());
+        AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        AppointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        AppointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+        AppointmentDto.setStartTime(appointment.getStartTime());
+        AppointmentDto.setEndTime(appointment.getEndTime());
+        AppointmentDto.setTotalAmount(appointment.getTotalAmount());
+        AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+
+        AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+                .map(services -> services.stream()
+                        .map(ServiceModel::getId)
+                        .toList())
+                .orElse(List.of()));
+
         return AppointmentDto;
     }
 }
