@@ -257,7 +257,7 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/list")
+    @GetMapping("/by-date")
     public ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(@PathVariable LocalDate date, UUID companyId) {
         List<AppointmentReponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
 

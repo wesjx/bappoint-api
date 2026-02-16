@@ -9,6 +9,8 @@ import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Services.ServiceRepository;
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import com.wesleysilva.bappoint.Settings.SettingsService;
+import com.wesleysilva.bappoint.exceptions.*;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -78,7 +80,7 @@ public class AppointmentService {
         AppointmentModel appointment = new AppointmentModel();
         appointment.setCompany(
                 companyRepository.findById(companyId)
-                        .orElseThrow(() -> new RuntimeException("Company not found"))
+                        .orElseThrow(CompanyNotFoundException::new)
         );
 
         appointment.setAppointmentDate(date);
@@ -111,22 +113,31 @@ public class AppointmentService {
     }
 
     void deleteAppointment(UUID appointmentId) {
-        appointmentRepository.deleteById(appointmentId);
+        AppointmentModel appointment = appointmentRepository.findById(appointmentId).orElseThrow(AppointmentNotFoundException::new);
+
+        try{
+            appointmentRepository.delete(appointment);
+        } catch (java.lang.Exception exception){
+            throw new AppointmentNotFoundException();
+        }
+
     }
 
     public UpdateAppointmentDTO updateAppointment(UUID appointmentId, UpdateAppointmentDTO appointmentDto) {
-        Optional<AppointmentModel> existingAppointment = appointmentRepository.findById(appointmentId);
-        if (existingAppointment.isPresent()) {
+        Optional<AppointmentModel> existingAppointment = Optional.of(appointmentRepository.findById(appointmentId)
+                .orElseThrow(AppointmentNotFoundException::new));
+
+        try {
+            List<ServiceModel> services = appointmentDto.getServiceIds().stream()
+                    .map(serviceId -> serviceRepository.findById(serviceId)
+                            .orElseThrow(ServiceNotFoundException::new))
+                    .toList();
+
             AppointmentModel appointmentToUpdate = existingAppointment.get();
 
             appointmentToUpdate.setAppointmentDate(appointmentDto.getAppointmentDate());
             appointmentToUpdate.setStartTime(appointmentDto.getStartTime());
             appointmentToUpdate.setEndTime(appointmentDto.getEndTime());
-
-            List<ServiceModel> services = appointmentDto.getServiceIds().stream()
-                    .map(serviceId -> serviceRepository.findById(serviceId)
-                            .orElseThrow(() -> new RuntimeException("Service not found: " + serviceId)))
-                    .collect(Collectors.toList());
             appointmentToUpdate.setServices(services);
 
             appointmentToUpdate.setCostumerName(appointmentDto.getCostumerName());
@@ -136,18 +147,28 @@ public class AppointmentService {
             appointmentToUpdate.setAppointmentStatus(appointmentDto.getAppointmentStatus());
 
             return appointmentMapper.toUpdateAppointmentDTO(appointmentRepository.save(appointmentToUpdate));
+        } catch (Exception exception){
+            throw new AppointmentUpdateException();
         }
-        return null;
 
     }
 
     @Transactional(readOnly = true)
     public List<AppointmentReponseDTO> listAppointmentsByDate(LocalDate date, UUID companyId) {
-        List<AppointmentModel> appointments = appointmentRepository.findByAppointmentDateAndCompanyId(date, companyId);
+        companyRepository.findById(companyId)
+                .orElseThrow(CompanyNotFoundException::new);
 
-        return appointments.stream()
-                .map(appointmentMapper::toResponseDTO)
-                .collect(Collectors.toList());
+        try {
+            List<AppointmentModel> appointments = appointmentRepository
+                    .findByAppointmentDateAndCompanyId(date, companyId);
+
+            return appointments.stream()
+                    .map(appointmentMapper::toResponseDTO)
+                    .toList();
+
+        } catch (DataAccessException e) {
+            throw new AppointmentQueryException();
+        }
     }
 
 
