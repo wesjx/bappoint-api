@@ -1,6 +1,6 @@
 package com.wesleysilva.bappoint.Company.dto;
 
-import com.wesleysilva.bappoint.Appointments.AppointmentDTO;
+import com.wesleysilva.bappoint.Appointments.dto.AppointmentReponseDTO;
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -35,6 +35,6 @@ public class CompanyDetailsResponseDTO {
     @Valid
     @NotNull
     private SettingsDTO settings;
-    private List<AppointmentDTO> appointments;
+    private List<AppointmentReponseDTO> appointments;
 
 }
