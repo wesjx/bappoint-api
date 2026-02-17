@@ -1,9 +1,7 @@
 package com.wesleysilva.bappoint.infra;
 
-import com.wesleysilva.bappoint.exceptions.CompanyDeleteException;
-import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
-import com.wesleysilva.bappoint.exceptions.EmailAlreadyExistsException;
-import com.wesleysilva.bappoint.exceptions.RestErrorMessage;
+import com.wesleysilva.bappoint.exceptions.*;
+import com.wesleysilva.bappoint.exceptions.AppointmentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,6 +26,36 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(CompanyDeleteException.class)
     private ResponseEntity<RestErrorMessage> companyDeleteResponse(CompanyDeleteException exception) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, "Failed to delete company.");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+    }
+
+    @ExceptionHandler(AppointmentNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> appointmentNotFound(AppointmentNotFoundException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "Appointment not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
+    }
+
+    @ExceptionHandler(AppointmentDeleteException.class)
+    private ResponseEntity<RestErrorMessage> appointmentDeleteException(AppointmentDeleteException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, "Error deleting appointment.");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+    }
+
+    @ExceptionHandler(AppointmentQueryException.class)
+    private ResponseEntity<RestErrorMessage> appointmentQueryException(AppointmentQueryException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, "Failed to list appointments.");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+    }
+
+    @ExceptionHandler(ServiceNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> serviceNotFoundException(ServiceNotFoundException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "Services not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
+    }
+
+    @ExceptionHandler(AppointmentUpdateException.class)
+    private ResponseEntity<RestErrorMessage> appointmentUpdateException(AppointmentUpdateException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, "Failed to update appointment.");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
     }
 }
