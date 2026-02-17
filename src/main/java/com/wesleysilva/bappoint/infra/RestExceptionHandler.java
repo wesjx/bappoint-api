@@ -58,4 +58,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, "Failed to update appointment.");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
     }
+
+    @ExceptionHandler(SettingsNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> settingsNotFoundException(SettingsNotFoundException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "Failed to update appointment.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
+    }
 }
