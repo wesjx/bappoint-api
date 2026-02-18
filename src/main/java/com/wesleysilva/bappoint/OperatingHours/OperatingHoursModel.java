@@ -23,20 +23,27 @@ public class OperatingHoursModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    Boolean is_active;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
-    LocalTime start_time;
-    LocalTime end_time;
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
 
-    LocalTime lunch_start_time;
-    LocalTime lunch_end_time;
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
+
+    @Column(name = "lunch_start_time")
+    private LocalTime lunchStartTime;
+
+    @Column(name = "lunch_end_time")
+    private LocalTime lunchEndTime;
 
     @ManyToOne
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "weekday", nullable = false)
+    @Column(name = "weekday", nullable = false, unique = true)
     private WeekDay weekday;
 
 }
