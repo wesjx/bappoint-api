@@ -2,6 +2,7 @@ package com.wesleysilva.bappoint.OperatingHours;
 
 import com.wesleysilva.bappoint.Company.CompanyModel;
 import com.wesleysilva.bappoint.Company.CompanyRepository;
+import com.wesleysilva.bappoint.OperatingHours.dto.CreateOperatingHoursDTO;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/company/{companyId}/settings/operating_hours")
-@Tag(name = "dev/Company", description = "Manage company operating hours.")
+@Tag(name = "dev/OperatingHours", description = "Manage company operating hours.")
 public class OperatingHoursController {
     private final OperatingHoursService operatingHoursService;
     private final CompanyRepository companyRepository;
@@ -29,13 +30,9 @@ public class OperatingHoursController {
             summary = "",
             description = ""
     )
-    public ResponseEntity<OperatingHoursDTO> createOperatingHours(@PathVariable UUID companyId, @RequestBody OperatingHoursDTO operatingHoursDTO) {
+    public ResponseEntity<CreateOperatingHoursDTO> createOperatingHours(@PathVariable UUID companyId, @RequestBody CreateOperatingHoursDTO operatingHoursDTO) {
 
-        SettingsModel settings = companyRepository.findById(companyId)
-                .map(CompanyModel::getSettings)
-                .orElseThrow(() -> new RuntimeException("Company or settings not found"));
-
-        OperatingHoursDTO newOperatingHours = operatingHoursService.createOperatingHours(settings.getId(), operatingHoursDTO);
+        CreateOperatingHoursDTO newOperatingHours = operatingHoursService.createOperatingHours(companyId, operatingHoursDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newOperatingHours);
     }
