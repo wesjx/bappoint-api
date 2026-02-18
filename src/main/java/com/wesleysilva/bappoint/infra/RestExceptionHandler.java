@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.infra;
 
+import com.wesleysilva.bappoint.OffDay.dto.OffDaysAllDetailsDTO;
 import com.wesleysilva.bappoint.exceptions.*;
 import com.wesleysilva.bappoint.exceptions.AppointmentNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -64,4 +65,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "Failed to update appointment.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
+
+    @ExceptionHandler(OffDayNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> offDayNotFound(OffDaysAllDetailsDTO exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "OffDay not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
+    }
+
+
 }

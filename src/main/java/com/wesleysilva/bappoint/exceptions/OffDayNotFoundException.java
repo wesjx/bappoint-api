@@ -1,4 +1,7 @@
 package com.wesleysilva.bappoint.exceptions;
 
-public class OffDayNotFoundException {
+public class OffDayNotFoundException extends RuntimeException{
+    public OffDayNotFoundException() {
+        super("OffDay not found.");
+    }
 }
