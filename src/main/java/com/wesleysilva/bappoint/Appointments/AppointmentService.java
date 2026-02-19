@@ -98,16 +98,15 @@ public class AppointmentService {
     }
 
 
-    public List<AppointmentAllDetailsDTO> listAppointments(int page, int itemsPerPage) {
+    public List<AppointmentReponseDTO> listAppointments(int page, int itemsPerPage) {
         Page<AppointmentModel> appointments = appointmentRepository.findAll(PageRequest.of(page, itemsPerPage) );
         return appointments.stream()
-                .map(appointmentMapper::toResponseAllDetailsDTO)
+                .map(appointmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public AppointmentAllDetailsDTO getAppointmentById(UUID appointmentId) {
-        AppointmentModel appointment = appointmentRepository.findById(appointmentId).orElseThrow(
-                () -> new RuntimeException("Appointment not found"));
+        AppointmentModel appointment = appointmentRepository.findById(appointmentId).orElseThrow(AppointmentNotFoundException::new);
 
         return appointmentMapper.toResponseAllDetailsDTO(appointment);
     }
