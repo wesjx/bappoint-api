@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.Company.dto;
 
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
+import com.wesleysilva.bappoint.Settings.dto.CreateSettingsDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateCompanyDTO {
-
-    private UUID id;
 
     @NotBlank
     @Size(min = 3, max = 100)
@@ -32,6 +31,6 @@ public class CreateCompanyDTO {
 
     @Valid
     @NotNull
-    private SettingsDTO settings;
+    private CreateSettingsDTO settings;
 
 }

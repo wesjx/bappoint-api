@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.Company.dto;
 
 import com.wesleysilva.bappoint.Settings.SettingsDTO;
+import com.wesleysilva.bappoint.Settings.dto.UpdateSettingsDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,5 @@ public class UpdateCompanyDTO {
 
     @Valid
     @NotNull
-    private SettingsDTO settings;
+    private UpdateSettingsDTO settings;
 }

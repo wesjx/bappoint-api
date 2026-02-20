@@ -27,22 +27,30 @@ public class CompanyService {
 
 
     @Transactional
-    public CreateCompanyDTO createCompany(CreateCompanyDTO dto) {
-        if (companyRepository.existsByEmail(dto.getEmail())) {
+    public CreateCompanyDTO createCompany(CreateCompanyDTO companyDTO) {
+        if (companyRepository.existsByEmail(companyDTO.getEmail())) {
             throw new EmailAlreadyExistsException();
         }
 
         CompanyModel company = new CompanyModel();
-        company.setName(dto.getName());
-        company.setEmail(dto.getEmail());
-        company.setPhone(dto.getPhone());
-        company.setAddress(dto.getAddress());
+        company.setName(companyDTO.getName());
+        company.setEmail(companyDTO.getEmail());
+        company.setPhone(companyDTO.getPhone());
+        company.setAddress(companyDTO.getAddress());
 
-        if (dto.getSettings() != null) {
+        if (companyDTO.getSettings() != null) {
             SettingsModel settings = new SettingsModel();
-            settings.setAppointment_interval(dto.getSettings().getAppointment_interval());
-            settings.setMax_cancellation_interval(dto.getSettings().getMax_cancellation_interval());
+            settings.setAppointmentInterval(companyDTO.getSettings().getAppointmentInterval());
+            settings.setMaxCancellationInterval(companyDTO.getSettings().getMaxCancellationInterval());
             company.setSettings(settings);
+        }
+
+        if (companyDTO.getSettings().getMaxCancellationInterval() == null) {
+            throw new IllegalArgumentException("Max Cancellation Interval cannot be null");
+        }
+
+        if (companyDTO.getSettings().getAppointmentInterval() == null) {
+            throw new IllegalArgumentException("Appointment Interval cannot be null");
         }
 
         CompanyModel saved = companyRepository.save(company);
