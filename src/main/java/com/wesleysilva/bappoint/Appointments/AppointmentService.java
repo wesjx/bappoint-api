@@ -7,8 +7,8 @@ import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Company.CompanyRepository;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Services.ServiceRepository;
-import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import com.wesleysilva.bappoint.Settings.SettingsService;
+import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
 import com.wesleysilva.bappoint.exceptions.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -47,7 +47,7 @@ public class AppointmentService {
 
         List<AppointmentModel> booked = appointmentRepository.findByAppointmentDateAndCompanyId(date, companyId);
 
-        SettingsDTO settings = settingsService.getByCompanyId(companyId);
+        SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
         UUID settingsId = settings.getId();
 
         List<ServiceModel> services = appointmentDTO.getServiceIds().stream()
