@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/company/{companyId}/settings/operating_hours")
+@RequestMapping("/companies/{companyId}/settings/operating_hours")
 @Tag(name = "dev/OperatingHours", description = "Manage company operating hours.")
 public class OperatingHoursController {
     private final OperatingHoursService operatingHoursService;

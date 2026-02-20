@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("company/{companyId}/settings/off_days")
+@RequestMapping("companies/{companyId}/settings/off_days")
 @Tag(name = "dev/OffDays", description = "Manage company off days.")
 public class OffDaysController {
     private final OffDaysService offDaysService;
