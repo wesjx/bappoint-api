@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -23,9 +24,16 @@ public class ServiceModel {
     @JoinColumn(name = "settings_id")
     private SettingsModel settings;
 
+    @Column(name = "name", nullable = false)
     String name;
-    Integer price;
-    Integer duration_minutes;
-    Boolean is_active;
+
+    @Column(name = "price", nullable = false)
+    BigDecimal price;
+
+    @Column(name = "duration_minutes", nullable = false)
+    Integer durationMinutes;
+
+    @Column(name = "is_active", nullable = false)
+    Boolean isActive;
 
 }
