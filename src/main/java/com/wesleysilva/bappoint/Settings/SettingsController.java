@@ -1,5 +1,7 @@
 package com.wesleysilva.bappoint.Settings;
 
+import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
+import com.wesleysilva.bappoint.Settings.dto.UpdateSettingsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,9 @@ public class SettingsController {
         this.settingsService = settingsService;
     }
 
-    @GetMapping
+    @GetMapping("/list")
     @Operation(summary = "Get company settings")
-    public ResponseEntity<SettingsDTO> getSettings(
+    public ResponseEntity<SettingsAllDetailsDTO> getSettings(
             @PathVariable UUID companyId
     ) {
         return ResponseEntity.ok(
@@ -28,14 +30,14 @@ public class SettingsController {
         );
     }
 
-    @PutMapping
+    @PutMapping("/update")
     @Operation(summary = "Update company settings")
-    public ResponseEntity<SettingsDTO> updateSettings(
+    public ResponseEntity<UpdateSettingsDTO> updateSettings(
             @PathVariable UUID companyId,
-            @RequestBody SettingsDTO dto
+            @RequestBody UpdateSettingsDTO settingsDTO
     ) {
         return ResponseEntity.ok(
-                settingsService.updateByCompanyId(companyId, dto)
+                settingsService.updateByCompanyId(companyId, settingsDTO)
         );
     }
 }
