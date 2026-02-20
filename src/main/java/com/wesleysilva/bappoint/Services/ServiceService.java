@@ -1,8 +1,17 @@
 package com.wesleysilva.bappoint.Services;
 
+import com.wesleysilva.bappoint.Company.CompanyModel;
+import com.wesleysilva.bappoint.Company.CompanyRepository;
+import com.wesleysilva.bappoint.Services.dto.CreateServiceDTO;
+import com.wesleysilva.bappoint.Services.dto.ServiceAllDetailsDTO;
+import com.wesleysilva.bappoint.Services.dto.ServiceResponseDTO;
+import com.wesleysilva.bappoint.Services.dto.UpdateServiceDTO;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
-import com.wesleysilva.bappoint.Settings.SettingsRepository;
+import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
+import com.wesleysilva.bappoint.exceptions.ServiceNotFoundException;
+import com.wesleysilva.bappoint.exceptions.SettingsNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,72 +22,71 @@ import java.util.stream.Collectors;
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
-    private final SettingsRepository settingsRepository;
     private final ServiceMapper serviceMapper;
+    private final CompanyRepository companyRepository;
 
-    public ServiceService(ServiceRepository serviceRepository,
-                          SettingsRepository settingsRepository,
-                          ServiceMapper serviceMapper) {
+    public ServiceService(ServiceRepository serviceRepository, ServiceMapper serviceMapper, CompanyRepository companyRepository) {
         this.serviceRepository = serviceRepository;
-        this.settingsRepository = settingsRepository;
         this.serviceMapper = serviceMapper;
+        this.companyRepository = companyRepository;
     }
 
-    public ServiceDTO createService(UUID settingsId, ServiceDTO serviceDTO) {
-
+    @Transactional
+    public CreateServiceDTO createService(CreateServiceDTO serviceDTO, UUID companyId) {
         ServiceModel serviceModel = serviceMapper.toEntity(serviceDTO);
 
-        SettingsModel settings = settingsRepository
-                .findById(settingsId)
-                .orElseThrow(() -> new RuntimeException("Settings not found"));
+        CompanyModel company = companyRepository.findById(companyId)
+                .orElseThrow(CompanyNotFoundException::new);
+
+        SettingsModel settings = company.getSettings();
+
+        if(settings == null) {
+            throw new SettingsNotFoundException();
+        }
 
         serviceModel.setSettings(settings);
 
         serviceModel = serviceRepository.save(serviceModel);
 
-        return serviceMapper.toDto(serviceModel);
+        return serviceMapper.toCreate(serviceModel);
     }
 
-    public List<ServiceDTO> listServicesBySettings(UUID settingsId) {
-        List<ServiceModel> serviceModels = serviceRepository.findBySettingsId(settingsId);
-        return serviceModels.stream()
-                .map(serviceMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<ServiceDTO> listAllServices() {
+    @Transactional(readOnly = true)
+    public List<ServiceResponseDTO> listAllServices() {
         List<ServiceModel> serviceModels = serviceRepository.findAll();
         return serviceModels.stream()
-                .map(serviceMapper::toDto)
+                .map(serviceMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public ServiceDTO getServiceById(UUID serviceId) {
+    @Transactional
+    public ServiceAllDetailsDTO getServiceById(UUID serviceId) {
         ServiceModel serviceModel = serviceRepository
                 .findById(serviceId)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
-        return serviceMapper.toDto(serviceModel);
+                .orElseThrow(ServiceNotFoundException::new);
+        return serviceMapper.toResponseAllDetails(serviceModel);
     }
 
+    @Transactional
     public void deleteService(UUID serviceId) {
-        serviceRepository.deleteById(serviceId);
+        ServiceModel service = serviceRepository.findById(serviceId)
+                .orElseThrow(ServiceNotFoundException::new);
+        serviceRepository.delete(service);
     }
 
-    public ServiceDTO updateService(UUID serviceId, ServiceDTO serviceDTO) {
-        Optional<ServiceModel> existingService = serviceRepository.findById(serviceId);
 
-        if (existingService.isPresent()) {
+    public UpdateServiceDTO updateService(UUID serviceId, CreateServiceDTO serviceDTO) {
+        Optional<ServiceModel> existingService = Optional.of(serviceRepository.findById(serviceId)
+                .orElseThrow(ServiceNotFoundException::new));
+
             ServiceModel serviceToUpdate = existingService.get();
 
             serviceToUpdate.setName(serviceDTO.getName());
             serviceToUpdate.setPrice(serviceDTO.getPrice());
-            serviceToUpdate.setDuration_minutes(serviceDTO.getDuration_minutes());
-            serviceToUpdate.setIs_active(serviceDTO.getIs_active());
+            serviceToUpdate.setDurationMinutes(serviceDTO.getDurationMinutes());
+            serviceToUpdate.setIsActive(serviceDTO.getIsActive());
 
             ServiceModel savedService = serviceRepository.save(serviceToUpdate);
-            return serviceMapper.toDto(savedService);
-        }
-
-        return null;
+            return serviceMapper.toUpdate(savedService);
     }
 }
