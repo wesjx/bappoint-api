@@ -106,7 +106,7 @@ public class OperatingHoursController {
                                 "lunchEndTime": "13:30:00",
                                 "company": {
                                     "id": "6eab4b1c-b25c-41ac-b837-f4c3b0415c68",
-                                    "name": "Barbearia XPTO"
+                                    "name": "Barber XPTO"
                                 }
                             },
                             {
@@ -158,7 +158,7 @@ public class OperatingHoursController {
                             "lunchEndTime": "13:30:00",
                             "company": {
                                 "id": "6eab4b1c-b25c-41ac-b837-f4c3b0415c68",
-                                "name": "Barbearia XPTO",
+                                "name": "Barber XPTO",
                                 "email": "xpto@barba.com",
                                 "phone": "8888888",
                                 "address": "Rua das Flores, 123"
