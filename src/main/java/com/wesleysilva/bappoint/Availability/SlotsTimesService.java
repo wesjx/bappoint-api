@@ -7,8 +7,8 @@ import com.wesleysilva.bappoint.OffDay.OffDaysRepository;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursModel;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursRepository;
 import com.wesleysilva.bappoint.Services.ServiceModel;
-import com.wesleysilva.bappoint.Settings.SettingsDTO;
 import com.wesleysilva.bappoint.Settings.SettingsService;
+import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
 import com.wesleysilva.bappoint.enums.AppointmentInterval;
 import com.wesleysilva.bappoint.enums.WeekDay;
 import org.springframework.stereotype.Service;
@@ -46,8 +46,8 @@ public class SlotsTimesService {
             return List.of();
         }
 
-        SettingsDTO settings = settingsService.getByCompanyId(companyId);
-        AppointmentInterval appointmentInterval = settings.getAppointment_interval();
+        SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
+        AppointmentInterval appointmentInterval = settings.getAppointmentInterval();
 
         //check if hours of the day is empty means day off
         List<OperatingHoursModel> hours = operatingHoursRepository.findByWeekday(weekday);
