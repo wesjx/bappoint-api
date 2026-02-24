@@ -47,6 +47,9 @@ public class AppointmentModel {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
+    @Column(name = "stripe_session_id")
+    private String stripeSessionId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "appointment_status", nullable = false)
     private AppointmentStatus appointmentStatus;
