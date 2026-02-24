@@ -92,6 +92,7 @@ public class AppointmentService {
         appointment.setCostumerPhone(appointmentDTO.getCostumerPhone());
         appointment.setTotalAmount(totalAmount);
         appointment.setAppointmentStatus(appointmentDTO.getAppointmentStatus());
+        appointment.setStripeSessionId(appointmentDTO.getStripeSessionId());
 
         AppointmentModel savedAppointment = appointmentRepository.save(appointment);
         return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
@@ -144,6 +145,7 @@ public class AppointmentService {
             appointmentToUpdate.setCostumerPhone(appointmentDto.getCostumerPhone());
             appointmentToUpdate.setTotalAmount(appointmentDto.getTotalAmount());
             appointmentToUpdate.setAppointmentStatus(appointmentDto.getAppointmentStatus());
+            appointmentToUpdate.setStripeSessionId(appointmentDto.getStripeSessionId());
 
             return appointmentMapper.toUpdateAppointmentDTO(appointmentRepository.save(appointmentToUpdate));
         } catch (Exception exception){
