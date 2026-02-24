@@ -34,6 +34,10 @@ public class CompanyDetailsResponseDTO {
 
     @Valid
     @NotNull
+    private String stripeAccountId;
+
+    @Valid
+    @NotNull
     private SettingsAllDetailsDTO settings;
 
     @Valid

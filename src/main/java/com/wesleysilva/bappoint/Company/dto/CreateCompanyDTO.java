@@ -30,4 +30,8 @@ public class CreateCompanyDTO {
     @NotNull
     private CreateSettingsDTO settings;
 
+    @Valid
+    @NotNull
+    private String stripeAccountId;
+
 }
