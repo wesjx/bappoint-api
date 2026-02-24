@@ -28,5 +28,9 @@ public class UpdateCompanyDTO {
 
     @Valid
     @NotNull
+    private String stripeAccountId;
+
+    @Valid
+    @NotNull
     private UpdateSettingsDTO settings;
 }
