@@ -22,6 +22,7 @@ public class AppointmentMapper {
         AppointmentDto.setEndTime(appointment.getEndTime());
         AppointmentDto.setTotalAmount(appointment.getTotalAmount());
         AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
 
         AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
@@ -44,6 +45,7 @@ public class AppointmentMapper {
         AppointmentDto.setEndTime(appointment.getEndTime());
         AppointmentDto.setTotalAmount(appointment.getTotalAmount());
         AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
 
         AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
@@ -66,6 +68,7 @@ public class AppointmentMapper {
         AppointmentDto.setEndTime(appointment.getEndTime());
         AppointmentDto.setTotalAmount(appointment.getTotalAmount());
         AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
 
         AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
