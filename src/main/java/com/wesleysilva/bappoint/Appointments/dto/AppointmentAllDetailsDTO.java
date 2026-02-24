@@ -46,6 +46,9 @@ public class AppointmentAllDetailsDTO {
     @NotNull
     private AppointmentStatus appointmentStatus;
 
+    @NotNull
+    private String stripeSessionId;
+
     @NotEmpty
     private List<UUID> serviceIds;
 

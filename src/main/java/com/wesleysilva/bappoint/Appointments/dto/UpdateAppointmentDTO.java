@@ -43,6 +43,9 @@ public class UpdateAppointmentDTO {
     @NotNull
     private AppointmentStatus appointmentStatus;
 
+    @NotNull
+    private String stripeSessionId;
+
     @NotEmpty
     private List<UUID> serviceIds;
 }
