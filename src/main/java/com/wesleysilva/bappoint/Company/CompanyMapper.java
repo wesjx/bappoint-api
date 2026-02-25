@@ -83,6 +83,7 @@ public class CompanyMapper {
         if (updateCompanyDTO.getPhone() != null) existingCompany.setPhone(updateCompanyDTO.getPhone());
         if (updateCompanyDTO.getAddress() != null) existingCompany.setAddress(updateCompanyDTO.getAddress());
         if (updateCompanyDTO.getStripeAccountId() != null) existingCompany.setStripeAccountId(updateCompanyDTO.getStripeAccountId());
+        if (updateCompanyDTO.getClerkUserId() != null) existingCompany.setClerkUserId(updateCompanyDTO.getClerkUserId());
 
         if (updateCompanyDTO.getSettings() != null) {
             settingsMapper.toUpdateFromDTO(

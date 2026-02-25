@@ -33,4 +33,7 @@ public class UpdateCompanyDTO {
     @Valid
     @NotNull
     private UpdateSettingsDTO settings;
+
+    @NotEmpty
+    private String clerkUserId;
 }
