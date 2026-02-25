@@ -38,6 +38,7 @@ public class CompanyService {
         company.setPhone(companyDTO.getPhone());
         company.setAddress(companyDTO.getAddress());
         company.setStripeAccountId(companyDTO.getStripeAccountId());
+        company.setClerkUserId(companyDTO.getClerkUserId());
 
         if (companyDTO.getSettings() != null) {
             SettingsModel settings = new SettingsModel();
