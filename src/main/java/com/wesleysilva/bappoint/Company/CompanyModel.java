@@ -25,6 +25,9 @@ public class CompanyModel {
     @Column(name = "stripe_account_id")
     private String stripeAccountId;
 
+    @Column(name = "clerk_user_id")
+    private String clerkUserId;
+
     @Column(name = "name")
     private String name;
 
