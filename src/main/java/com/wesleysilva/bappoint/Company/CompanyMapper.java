@@ -28,6 +28,7 @@ public class CompanyMapper {
         companyDto.setPhone(companyModel.getPhone());
         companyDto.setAddress(companyModel.getAddress());
         companyDto.setStripeAccountId(companyModel.getStripeAccountId());
+        companyDto.setClerkUserId(companyModel.getClerkUserId());
 
         if (companyModel.getSettings() != null) {
             companyDto.setSettings(settingsMapper.toCreate(companyModel.getSettings()));
@@ -59,6 +60,7 @@ public class CompanyMapper {
         companyDTO.setPhone(companyModel.getPhone());
         companyDTO.setAddress(companyModel.getAddress());
         companyDTO.setStripeAccountId(companyModel.getStripeAccountId());
+        companyDTO.setClerkUserId(companyModel.getClerkUserId());
 
         if (companyModel.getSettings() != null) {
             companyDTO.setSettings(settingsMapper.toResponseAllDetails(companyModel.getSettings()));
