@@ -44,4 +44,7 @@ public class CompanyDetailsResponseDTO {
     @NotNull
     private List<AppointmentReponseDTO> appointments;
 
+    @NotEmpty
+    private String clerkUserId;
+
 }

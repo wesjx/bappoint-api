@@ -26,12 +26,13 @@ public class CreateCompanyDTO {
     @NotEmpty
     private String address;
 
-    @Valid
     @NotNull
     private CreateSettingsDTO settings;
 
-    @Valid
     @NotNull
     private String stripeAccountId;
+
+    @NotEmpty
+    private String clerkUserId;
 
 }
