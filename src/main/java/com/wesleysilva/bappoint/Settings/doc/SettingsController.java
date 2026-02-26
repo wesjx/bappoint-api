@@ -1,4 +1,4 @@
-package com.wesleysilva.bappoint.Settings;
+package com.wesleysilva.bappoint.Settings.doc;
 
 import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
 import com.wesleysilva.bappoint.Settings.dto.UpdateSettingsDTO;
@@ -7,24 +7,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/companies/{companyId}/settings")
-@Tag(name = "dev/settings", description = "Manage company settings")
-public class SettingsController {
+public interface SettingsController {
 
-    private final SettingsService settingsService;
 
-    public SettingsController(SettingsService settingsService) {
-        this.settingsService = settingsService;
-    }
-
-    @GetMapping("/list")
     @Operation(
             summary = "Get company settings",
             description = "Retrieves complete company settings with all nested details (services, operating hours, off days). Returns 404 if company or settings not found."
@@ -84,15 +74,10 @@ public class SettingsController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<SettingsAllDetailsDTO> getSettings(
-            @PathVariable UUID companyId
-    ) {
-        return ResponseEntity.ok(
-                settingsService.getByCompanyId(companyId)
-        );
-    }
+    ResponseEntity<SettingsAllDetailsDTO> getSettings(@PathVariable UUID companyId);
 
-    @PutMapping("/update")
+
+
     @Operation(
             summary = "Update company settings",
             description = "Updates company settings including appointment interval, cancellation rules, services, operating hours and off days. Partial updates supported for nested collections."
@@ -148,12 +133,6 @@ public class SettingsController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<UpdateSettingsDTO> updateSettings(
-            @PathVariable UUID companyId,
-            @RequestBody UpdateSettingsDTO settingsDTO
-    ) {
-        return ResponseEntity.ok(
-                settingsService.updateByCompanyId(companyId, settingsDTO)
-        );
-    }
+    ResponseEntity<UpdateSettingsDTO> updateSettings(@PathVariable UUID companyId, @RequestBody UpdateSettingsDTO settingsDTO);
+
 }

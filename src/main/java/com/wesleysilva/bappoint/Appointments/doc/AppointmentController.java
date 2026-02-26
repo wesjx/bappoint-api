@@ -1,40 +1,26 @@
-package com.wesleysilva.bappoint.Appointments;
+package com.wesleysilva.bappoint.Appointments.doc;
 
 import com.wesleysilva.bappoint.Appointments.dto.AppointmentAllDetailsDTO;
 import com.wesleysilva.bappoint.Appointments.dto.AppointmentReponseDTO;
 import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Availability.SlotTimesDTO;
-import com.wesleysilva.bappoint.Availability.SlotsTimesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("companies/{companyId}/appointments")
-@Tag(name = "dev/Appointments", description = "Manage appointment scheduling")
-public class AppointmentController {
+public interface AppointmentController {
 
-    private final AppointmentService appointmentService;
-    private final SlotsTimesService slotsTimesService;
 
-    public AppointmentController(AppointmentService appointmentService, SlotsTimesService slotsTimesService) {
-        this.appointmentService = appointmentService;
-        this.slotsTimesService = slotsTimesService;
-    }
-
-    @GetMapping("/available-times")
     @Operation(summary = "List available times")
     @ApiResponses({
             @ApiResponse(
@@ -60,13 +46,10 @@ public class AppointmentController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<SlotTimesDTO>> getAvailableTimes(@PathVariable UUID companyId, @RequestParam String date) {
-        List<SlotTimesDTO> slotTimes = slotsTimesService.findAvailableSlots(companyId, date);
-        return ResponseEntity.ok(slotTimes);
-    }
+    ResponseEntity<List<SlotTimesDTO>> getAvailableTimes(@PathVariable UUID companyId, @RequestParam String date);
 
-    @GetMapping("/list")
-    @Transactional(readOnly = true)
+
+
     @Operation(summary = "List appointments")
     @ApiResponses({
             @ApiResponse(
@@ -103,13 +86,10 @@ public class AppointmentController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<AppointmentReponseDTO>> listAppointments(@RequestParam int page, int itemsPerPage) {
-        List<AppointmentReponseDTO> appointments = appointmentService.listAppointments(page, itemsPerPage);
+    ResponseEntity<List<AppointmentReponseDTO>> listAppointments(@RequestParam int page, int itemsPerPage);
 
-        return ResponseEntity.status(HttpStatus.OK).body(appointments);
-    }
 
-    @GetMapping("/{appointmentId}")
+
     @Operation(summary = "List appointments")
     @ApiResponses({
             @ApiResponse(
@@ -145,12 +125,10 @@ public class AppointmentController {
             @ApiResponse(responseCode = "500", description = "Server error"),
             @ApiResponse(responseCode = "404", description = "Appointment not found")
     })
-    public ResponseEntity<AppointmentAllDetailsDTO> listAppointmentById(@PathVariable UUID appointmentId) {
-        AppointmentAllDetailsDTO appointment = appointmentService.getAppointmentById(appointmentId);
-        return ResponseEntity.ok(appointment);
-    }
+    ResponseEntity<AppointmentAllDetailsDTO> listAppointmentById(@PathVariable UUID appointmentId);
 
-    @PostMapping("/create")
+
+
     @Operation(summary = "Create appointment")
     @ApiResponses({
             @ApiResponse(
@@ -189,15 +167,11 @@ public class AppointmentController {
             @ApiResponse(responseCode = "400", description = "Invalid data"),
             @ApiResponse(responseCode = "409", description = "Time slot conflict")
     })
-    public ResponseEntity<CreateAppointmentDTO> createAppointment(@PathVariable UUID companyId, @RequestBody CreateAppointmentDTO appointmentDTO) {
-
-        CreateAppointmentDTO appointment = appointmentService.createAppointment(appointmentDTO, companyId);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
-    }
+    ResponseEntity<CreateAppointmentDTO> createAppointment(@PathVariable UUID companyId,
+                                                                  @RequestBody CreateAppointmentDTO appointmentDTO);
 
 
-    @PutMapping("/update/{appointmentId}")
+
     @Operation(summary = "Update appointment")
     @ApiResponses({
             @ApiResponse(
@@ -234,31 +208,15 @@ public class AppointmentController {
             @ApiResponse(responseCode = "404", description = "ID not found"),
             @ApiResponse(responseCode = "409", description = "Time slot conflict")
     })
-    public ResponseEntity<?> updateAppointment(@RequestBody UpdateAppointmentDTO appointmentResponseDTO, @PathVariable UUID appointmentId) {
-        UpdateAppointmentDTO appointment = appointmentService.updateAppointment(appointmentId, appointmentResponseDTO);
+    ResponseEntity<?> updateAppointment(@RequestBody UpdateAppointmentDTO appointmentResponseDTO,
+                                        @PathVariable UUID appointmentId);
 
-        if (appointment != null) {
-            return ResponseEntity.ok(appointment);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
-    @DeleteMapping("/delete/{appointmentId}")
+
     @Operation(summary = "Update appointment")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Delete successfully"),
             @ApiResponse(responseCode = "404", description = "ID not found"),
     })
-    public ResponseEntity<Void> deleteAppointment(@PathVariable UUID appointmentId) {
-        appointmentService.deleteAppointment(appointmentId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/by-date")
-    public ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(@PathVariable LocalDate date, UUID companyId) {
-        List<AppointmentReponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(appointments);
-    }
+    ResponseEntity<Void> deleteAppointment(@PathVariable UUID appointmentId);
 }

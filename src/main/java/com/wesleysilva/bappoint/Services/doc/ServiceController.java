@@ -1,4 +1,4 @@
-package com.wesleysilva.bappoint.Services;
+package com.wesleysilva.bappoint.Services.doc;
 
 import com.wesleysilva.bappoint.Services.dto.CreateServiceDTO;
 import com.wesleysilva.bappoint.Services.dto.ServiceAllDetailsDTO;
@@ -11,25 +11,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("companies/{companyId}/services")
 @Tag(name = "dev/Services", description = "Manage company services")
-public class ServicesController {
+public interface ServiceController {
 
-    private final ServiceService serviceService;
 
-    public ServicesController(ServiceService serviceService) {
-        this.serviceService = serviceService;
-    }
-
-    @PostMapping("/create")
     @Operation(
             summary = "Create service for company",
             description = "Creates a new service for a specific company. Validates service name, price, duration and active status. Service is automatically associated with company settings."
@@ -78,15 +69,10 @@ public class ServicesController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<CreateServiceDTO> createService(
-            @PathVariable UUID companyId,
-           @Valid @RequestBody CreateServiceDTO service) {
+    ResponseEntity<CreateServiceDTO> createService(@PathVariable UUID companyId,
+                                                   @Valid @RequestBody CreateServiceDTO service);
 
-        CreateServiceDTO newService = serviceService.createService(service, companyId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newService);
-    }
 
-    @GetMapping("/list")
     @Operation(
             summary = "List services for company",
             description = "Returns all services associated with the company from the authenticated context. Does NOT require companyId parameter - uses company from JWT/security context."
@@ -128,12 +114,10 @@ public class ServicesController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<List<ServiceResponseDTO>> listServices() {
-        List<ServiceResponseDTO> serviceDTOS = serviceService.listAllServices();
-        return ResponseEntity.ok(serviceDTOS);
-    }
+    ResponseEntity<List<ServiceResponseDTO>> listServices();
 
-    @GetMapping("/{serviceId}")
+
+
     @Operation(
             summary = "Get service by ID",
             description = "Retrieves complete details of a specific service by UUID, including company and settings information. Returns 404 if service not found."
@@ -181,12 +165,10 @@ public class ServicesController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<ServiceAllDetailsDTO> getServiceById(@PathVariable UUID serviceId) {
-        ServiceAllDetailsDTO service = serviceService.getServiceById(serviceId);
-            return ResponseEntity.status(HttpStatus.OK).body(service);
-    }
+    ResponseEntity<ServiceAllDetailsDTO> getServiceById(@PathVariable UUID serviceId);
 
-    @DeleteMapping("/delete/{serviceId}")
+
+
     @Operation(
             summary = "Delete service",
             description = "Deletes a specific service by UUID. Returns 204 No Content on success (REST standard). Only active services can be deleted."
@@ -206,12 +188,10 @@ public class ServicesController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<String> deleteService(@PathVariable UUID serviceId) {
-            serviceService.deleteService(serviceId);
-            return ResponseEntity.status(HttpStatus.OK).body("Service deleted");
-    }
+    ResponseEntity<String> deleteService(@PathVariable UUID serviceId);
 
-    @PutMapping("/update/{serviceId}")
+
+
     @Operation(
             summary = "Update service",
             description = "Updates an existing service by UUID. Supports partial updates - only sent fields will be modified. Required: name, price, duration. Validates business rules before update."
@@ -256,11 +236,6 @@ public class ServicesController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<UpdateServiceDTO> updateService(
-            @PathVariable UUID serviceId,
-            @Valid @RequestBody CreateServiceDTO service) {
-
-        UpdateServiceDTO updatedService = serviceService.updateService(serviceId, service);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedService);
-    }
+    ResponseEntity<UpdateServiceDTO> updateService(@PathVariable UUID serviceId,
+                                                          @Valid @RequestBody CreateServiceDTO service);
 }

@@ -1,10 +1,9 @@
-package com.wesleysilva.bappoint.OffDay;
+package com.wesleysilva.bappoint.OffDay.doc;
 
 import com.wesleysilva.bappoint.OffDay.dto.CreateOffDayDTO;
 import com.wesleysilva.bappoint.OffDay.dto.OffDayUpdateDTO;
 import com.wesleysilva.bappoint.OffDay.dto.OffDaysAllDetailsDTO;
 import com.wesleysilva.bappoint.OffDay.dto.OffDaysResponseDTO;
-import com.wesleysilva.bappoint.exceptions.OffDayNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -12,24 +11,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("companies/{companyId}/settings/off_days")
 @Tag(name = "dev/OffDays", description = "Manage company off days.")
-public class OffDaysController {
-    private final OffDaysService offDaysService;
+public interface OffDaysController {
 
-    public OffDaysController(OffDaysService offDaysService) {
-        this.offDaysService = offDaysService;
-    }
-
-    @PostMapping("/create")
     @Operation(summary = "Create off day")
     @ApiResponses({
             @ApiResponse(
@@ -57,13 +47,11 @@ public class OffDaysController {
             @ApiResponse(responseCode = "400", description = "Invalid data"),
             @ApiResponse(responseCode = "404", description = "Company or Settings not found")
     })
-    public ResponseEntity<CreateOffDayDTO> createOffDays(@Valid @PathVariable UUID companyId, @RequestBody CreateOffDayDTO offDaysDTO) {
-        CreateOffDayDTO newOffDays = offDaysService.createOffDays(companyId, offDaysDTO);
+    ResponseEntity<CreateOffDayDTO> createOffDays(@Valid @PathVariable UUID companyId,
+                                                  @RequestBody CreateOffDayDTO offDaysDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(newOffDays);
-    }
 
-    @GetMapping("/list")
+
     @Operation(summary = "List all off days")
     @ApiResponses({
             @ApiResponse(
@@ -91,12 +79,10 @@ public class OffDaysController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<OffDaysResponseDTO>> getAllOffDays(){
-        List<OffDaysResponseDTO> offDaysDTOs = offDaysService.getAllOffDays();
-        return ResponseEntity.status(HttpStatus.OK).body(offDaysDTOs);
-    }
+    ResponseEntity<List<OffDaysResponseDTO>> getAllOffDays();
 
-    @GetMapping("/list/{offDaysId}")
+
+
     @Operation(summary = "List off day by id")
     @ApiResponses({
             @ApiResponse(
@@ -122,13 +108,11 @@ public class OffDaysController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<OffDaysAllDetailsDTO> getOffDaysById(@PathVariable UUID offDaysId){
-        OffDaysAllDetailsDTO offDaysDTO = offDaysService.getOffDaysById(offDaysId);
+    ResponseEntity<OffDaysAllDetailsDTO> getOffDaysById(@PathVariable UUID offDaysId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(offDaysDTO);
-    }
 
-    @DeleteMapping("/delete/{offDaysId}")
+
+
     @Operation(
             summary = "Delete a off day",
             description = "Permanently removes a off day from the system by UUID.",
@@ -137,16 +121,11 @@ public class OffDaysController {
                     @ApiResponse(responseCode = "404", description = "Off day not found")
             }
     )
-    void deleteOffDays(@PathVariable UUID offDaysId){
+    void deleteOffDays(@PathVariable UUID offDaysId);
 
-        if (offDaysService.getOffDaysById(offDaysId) != null ){
-        offDaysService.deleteOffDaysById(offDaysId);
-        } else {
-            throw new OffDayNotFoundException();
-        }
-    }
 
-    @PutMapping("/update/{offDaysId}")
+
+
     @Operation(summary = "Update off day")
     @ApiResponses({
             @ApiResponse(
@@ -174,17 +153,6 @@ public class OffDaysController {
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<OffDayUpdateDTO> updateOffDays(
-            @PathVariable UUID offDaysId,
-            @Valid @RequestBody OffDayUpdateDTO offDaysDTO
-    ) {
-        OffDayUpdateDTO updateOffDays = offDaysService.updateService(offDaysId, offDaysDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(updateOffDays);
-    }
-
-
-
+    ResponseEntity<OffDayUpdateDTO> updateOffDays(@PathVariable UUID offDaysId,
+                                                  @Valid @RequestBody OffDayUpdateDTO offDaysDTO);
 }
-
-
-
