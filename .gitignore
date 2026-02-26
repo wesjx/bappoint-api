@@ -34,3 +34,9 @@ build/
 
 ### MAC OS ###
 .DS_Store
+
+### Environments variable ###
+.env
+
+### Docker ###
+compose.yaml
