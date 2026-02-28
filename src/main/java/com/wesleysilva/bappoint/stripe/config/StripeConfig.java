@@ -1,4 +1,4 @@
-package com.wesleysilva.bappoint.config;
+package com.wesleysilva.bappoint.stripe.config;
 
 import com.stripe.Stripe;
 import org.springframework.beans.factory.annotation.Value;
