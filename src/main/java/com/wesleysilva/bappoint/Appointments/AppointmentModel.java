@@ -54,6 +54,9 @@ public class AppointmentModel {
     @Column(name = "appointment_status", nullable = false)
     private AppointmentStatus appointmentStatus;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "appointment_services",
