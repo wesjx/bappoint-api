@@ -9,6 +9,7 @@ import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Services.ServiceRepository;
 import com.wesleysilva.bappoint.Settings.SettingsService;
 import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import com.wesleysilva.bappoint.exceptions.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -91,18 +92,19 @@ public class AppointmentService {
         appointment.setCostumerEmail(appointmentDTO.getCostumerEmail());
         appointment.setCostumerPhone(appointmentDTO.getCostumerPhone());
         appointment.setTotalAmount(totalAmount);
-        appointment.setAppointmentStatus(appointmentDTO.getAppointmentStatus());
+        appointment.setAppointmentStatus(AppointmentStatus.PENDING);
         appointment.setStripeSessionId(appointmentDTO.getStripeSessionId());
+        appointment.setCreatedAt(LocalDateTime.now().plusMinutes(10));
 
         AppointmentModel savedAppointment = appointmentRepository.save(appointment);
         return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
     }
 
 
-    public List<AppointmentReponseDTO> listAppointments(int page, int itemsPerPage) {
+    public List<AppointmentAllDetailsDTO> listAppointments(int page, int itemsPerPage) {
         Page<AppointmentModel> appointments = appointmentRepository.findAll(PageRequest.of(page, itemsPerPage) );
         return appointments.stream()
-                .map(appointmentMapper::toResponseDTO)
+                .map(appointmentMapper::toResponseAllDetailsDTO)
                 .collect(Collectors.toList());
     }
 
