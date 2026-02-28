@@ -1,9 +1,11 @@
 package com.wesleysilva.bappoint.Appointments;
 
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,4 +14,9 @@ public interface AppointmentRepository extends JpaRepository<AppointmentModel, U
     List<AppointmentModel> findByAppointmentDateAndCompanyId(LocalDate date, UUID companyId);
 
     List<AppointmentModel> findByCompanyId(UUID companyId);
+
+    List<AppointmentModel> findByAppointmentStatusAndCreatedAtBefore(
+            AppointmentStatus status,
+            LocalDateTime time
+    );
 }
