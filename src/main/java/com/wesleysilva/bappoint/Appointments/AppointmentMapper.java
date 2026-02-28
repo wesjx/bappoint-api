@@ -46,6 +46,7 @@ public class AppointmentMapper {
         AppointmentDto.setTotalAmount(appointment.getTotalAmount());
         AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
         AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
+        AppointmentDto.setCreatedAt(appointment.getCreatedAt());
 
         AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
