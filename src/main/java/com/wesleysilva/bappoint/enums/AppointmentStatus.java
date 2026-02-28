@@ -1,9 +1,11 @@
 package com.wesleysilva.bappoint.enums;
 
 public enum AppointmentStatus {
-    APPROVED,
+    CREATED,
     REJECTED,
     CANCELLED,
     CONFIRMED,
-    PAID
+    PAID,
+    PENDING,
+    NOT_PAID
 }
