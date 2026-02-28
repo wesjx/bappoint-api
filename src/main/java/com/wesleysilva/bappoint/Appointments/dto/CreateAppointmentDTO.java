@@ -12,6 +12,9 @@ import java.util.UUID;
 
 @Data
 public class CreateAppointmentDTO {
+    @NotNull
+    private LocalDateTime createdAt;
+
     @NotBlank
     @Size(min = 2, max = 100)
     private String costumerName;

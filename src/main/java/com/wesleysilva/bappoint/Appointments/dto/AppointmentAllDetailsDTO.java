@@ -15,6 +15,9 @@ public class AppointmentAllDetailsDTO {
     @Null
     private UUID id;
 
+    @NotNull
+    private LocalDateTime createdAt;
+
     @NotBlank
     @Size(min = 2, max = 100)
     private String costumerName;
