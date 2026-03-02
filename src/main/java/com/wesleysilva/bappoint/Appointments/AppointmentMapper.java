@@ -12,93 +12,95 @@ import java.util.Optional;
 @Component
 public class AppointmentMapper {
     public AppointmentAllDetailsDTO toResponseAllDetailsDTO(AppointmentModel appointment) {
-        AppointmentAllDetailsDTO AppointmentDto = new AppointmentAllDetailsDTO();
-        AppointmentDto.setId(appointment.getId());
-        AppointmentDto.setCostumerName(appointment.getCostumerName());
-        AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
-        AppointmentDto.setCostumerPhone(appointment.getCostumerPhone());
-        AppointmentDto.setAppointmentDate(appointment.getAppointmentDate());
-        AppointmentDto.setStartTime(appointment.getStartTime());
-        AppointmentDto.setEndTime(appointment.getEndTime());
-        AppointmentDto.setTotalAmount(appointment.getTotalAmount());
-        AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
-        AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
+        AppointmentAllDetailsDTO appointmentDto = new AppointmentAllDetailsDTO();
+        appointmentDto.setId(appointment.getId());
+        appointmentDto.setCostumerName(appointment.getCostumerName());
+        appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        appointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        appointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+        appointmentDto.setStartTime(appointment.getStartTime());
+        appointmentDto.setEndTime(appointment.getEndTime());
+        appointmentDto.setTotalAmount(appointment.getTotalAmount());
+        appointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        appointmentDto.setStripeSessionId(appointment.getStripeSessionId());
+        appointmentDto.setCreatedAt(appointment.getCreatedAt());
 
-        AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+        appointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
                         .map(ServiceModel::getId)
                         .toList())
                 .orElse(List.of()));
 
-        AppointmentDto.setCompanyId(appointment.getCompany().getId());
-        return AppointmentDto;
+        appointmentDto.setCompanyId(appointment.getCompany().getId());
+        return appointmentDto;
     }
 
     public CreateAppointmentDTO toCreateAppointmentDTO(AppointmentModel appointment) {
-        CreateAppointmentDTO AppointmentDto = new CreateAppointmentDTO();
+        CreateAppointmentDTO appointmentDto = new CreateAppointmentDTO();
 
-        AppointmentDto.setCostumerName(appointment.getCostumerName());
-        AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
-        AppointmentDto.setCostumerPhone(appointment.getCostumerPhone());
-        AppointmentDto.setAppointmentDate(appointment.getAppointmentDate());
-        AppointmentDto.setStartTime(appointment.getStartTime());
-        AppointmentDto.setEndTime(appointment.getEndTime());
-        AppointmentDto.setTotalAmount(appointment.getTotalAmount());
-        AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
-        AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
-        AppointmentDto.setCreatedAt(appointment.getCreatedAt());
+        appointmentDto.setCostumerName(appointment.getCostumerName());
+        appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        appointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        appointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+        appointmentDto.setStartTime(appointment.getStartTime());
+        appointmentDto.setEndTime(appointment.getEndTime());
+        appointmentDto.setTotalAmount(appointment.getTotalAmount());
+        appointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        appointmentDto.setStripeSessionId(appointment.getStripeSessionId());
+        appointmentDto.setCreatedAt(appointment.getCreatedAt());
+        appointmentDto.setPaymentDeadline(appointment.getPaymentDeadline());
 
-        AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+        appointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
                         .map(ServiceModel::getId)
                         .toList())
                 .orElse(List.of()));
 
-        AppointmentDto.setCompanyId(appointment.getCompany().getId());
-        return AppointmentDto;
+        appointmentDto.setCompanyId(appointment.getCompany().getId());
+        return appointmentDto;
     }
 
     public UpdateAppointmentDTO toUpdateAppointmentDTO(AppointmentModel appointment) {
-        UpdateAppointmentDTO AppointmentDto = new UpdateAppointmentDTO();
+        UpdateAppointmentDTO appointmentDto = new UpdateAppointmentDTO();
 
-        AppointmentDto.setCostumerName(appointment.getCostumerName());
-        AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
-        AppointmentDto.setCostumerPhone(appointment.getCostumerPhone());
-        AppointmentDto.setAppointmentDate(appointment.getAppointmentDate());
-        AppointmentDto.setStartTime(appointment.getStartTime());
-        AppointmentDto.setEndTime(appointment.getEndTime());
-        AppointmentDto.setTotalAmount(appointment.getTotalAmount());
-        AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
-        AppointmentDto.setStripeSessionId(appointment.getStripeSessionId());
+        appointmentDto.setCostumerName(appointment.getCostumerName());
+        appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        appointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        appointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+        appointmentDto.setStartTime(appointment.getStartTime());
+        appointmentDto.setEndTime(appointment.getEndTime());
+        appointmentDto.setTotalAmount(appointment.getTotalAmount());
+        appointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        appointmentDto.setStripeSessionId(appointment.getStripeSessionId());
 
-        AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+        appointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
                         .map(ServiceModel::getId)
                         .toList())
                 .orElse(List.of()));
 
-        return AppointmentDto;
+        return appointmentDto;
     }
 
     public AppointmentReponseDTO toResponseDTO(AppointmentModel appointment) {
-        AppointmentReponseDTO AppointmentDto = new AppointmentReponseDTO();
+        AppointmentReponseDTO appointmentDto = new AppointmentReponseDTO();
 
-        AppointmentDto.setCostumerName(appointment.getCostumerName());
-        AppointmentDto.setCostumerEmail(appointment.getCostumerEmail());
-        AppointmentDto.setCostumerPhone(appointment.getCostumerPhone());
-        AppointmentDto.setAppointmentDate(appointment.getAppointmentDate());
-        AppointmentDto.setStartTime(appointment.getStartTime());
-        AppointmentDto.setEndTime(appointment.getEndTime());
-        AppointmentDto.setTotalAmount(appointment.getTotalAmount());
-        AppointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
+        appointmentDto.setCostumerName(appointment.getCostumerName());
+        appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        appointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        appointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+        appointmentDto.setStartTime(appointment.getStartTime());
+        appointmentDto.setEndTime(appointment.getEndTime());
+        appointmentDto.setTotalAmount(appointment.getTotalAmount());
+        appointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
 
-        AppointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+        appointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
                         .map(ServiceModel::getId)
                         .toList())
                 .orElse(List.of()));
 
-        return AppointmentDto;
+        return appointmentDto;
     }
 
 
