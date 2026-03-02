@@ -46,7 +46,12 @@ public class AppointmentService {
 
         LocalDate date = appointmentDTO.getStartTime().toLocalDate();
 
-        List<AppointmentModel> booked = appointmentRepository.findByAppointmentDateAndCompanyId(date, companyId);
+        List<AppointmentModel> booked = appointmentRepository
+                .findByAppointmentDateAndCompanyId(date, companyId)
+                .stream()
+                .filter(a -> a.getAppointmentStatus() != AppointmentStatus.NOT_PAID
+                        && a.getAppointmentStatus() != AppointmentStatus.CANCELLED)
+                .toList();
 
         SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
         UUID settingsId = settings.getId();
@@ -94,7 +99,8 @@ public class AppointmentService {
         appointment.setTotalAmount(totalAmount);
         appointment.setAppointmentStatus(AppointmentStatus.PENDING);
         appointment.setStripeSessionId(appointmentDTO.getStripeSessionId());
-        appointment.setCreatedAt(LocalDateTime.now().plusMinutes(10));
+        appointment.setPaymentDeadline(LocalDateTime.now().plusMinutes(10));
+        appointment.setCreatedAt(LocalDateTime.now());
 
         AppointmentModel savedAppointment = appointmentRepository.save(appointment);
         return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
