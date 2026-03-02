@@ -24,13 +24,16 @@ public class AppointmentExpirationScheduler {
         List<AppointmentModel> expired =
                 appointmentRepository.findByAppointmentStatusAndCreatedAtBefore(
                         AppointmentStatus.PENDING,
-                        LocalDateTime.now()
+                        LocalDateTime.now().minusMinutes(15)
                 );
 
         for (AppointmentModel appointment : expired) {
-
+            if (appointment.getAppointmentStatus() == AppointmentStatus.PAID) {
+                continue;
+            }
             appointment.setAppointmentStatus(AppointmentStatus.NOT_PAID);
             appointmentRepository.save(appointment);
         }
+
     }
 }
