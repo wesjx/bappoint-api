@@ -15,6 +15,9 @@ public class CreateAppointmentDTO {
     @NotNull
     private LocalDateTime createdAt;
 
+    @NotNull
+    private LocalDateTime paymentDeadline;
+
     @NotBlank
     @Size(min = 2, max = 100)
     private String costumerName;
