@@ -10,6 +10,7 @@ import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Settings.SettingsService;
 import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
 import com.wesleysilva.bappoint.enums.AppointmentInterval;
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import com.wesleysilva.bappoint.enums.WeekDay;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,11 @@ public class SlotsTimesService {
 
         //check is there is any appointment for the date
         List<AppointmentModel> bookedAppointments = appointmentRepository
-                .findByAppointmentDateAndCompanyId(date, companyId);
+                .findByAppointmentDateAndCompanyId(date, companyId)
+                .stream()
+                .filter(a -> a.getAppointmentStatus() != AppointmentStatus.NOT_PAID
+                        && a.getAppointmentStatus() != AppointmentStatus.CANCELLED)
+                .toList();
 
         OperatingHoursModel operatingHours = hours.getFirst();
         List<SlotTimesDTO> slots = generateSlots(operatingHours, date, appointmentInterval.getMinutes());
