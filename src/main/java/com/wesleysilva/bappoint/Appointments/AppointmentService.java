@@ -4,6 +4,7 @@ import com.wesleysilva.bappoint.Appointments.dto.AppointmentAllDetailsDTO;
 import com.wesleysilva.bappoint.Appointments.dto.AppointmentReponseDTO;
 import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
+import com.wesleysilva.bappoint.Availability.SlotsTimesService;
 import com.wesleysilva.bappoint.Company.CompanyRepository;
 import com.wesleysilva.bappoint.Services.ServiceModel;
 import com.wesleysilva.bappoint.Services.ServiceRepository;
@@ -33,13 +34,15 @@ public class AppointmentService {
     private final CompanyRepository companyRepository;
     private final SettingsService settingsService;
     private final ServiceRepository serviceRepository;
+    private final SlotsTimesService slotsTimesService;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, CompanyRepository companyRepository, SettingsService settingsService, ServiceRepository serviceRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, CompanyRepository companyRepository, SettingsService settingsService, ServiceRepository serviceRepository, SlotsTimesService slotsTimesService) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
         this.companyRepository = companyRepository;
         this.settingsService = settingsService;
         this.serviceRepository = serviceRepository;
+        this.slotsTimesService = slotsTimesService;
     }
 
     public CreateAppointmentDTO createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
@@ -75,6 +78,11 @@ public class AppointmentService {
 
         if (hasConflict) {
             throw new IllegalStateException("This slot is already occupied");
+        }
+
+        boolean allowed = slotsTimesService.isRangeWithinSlots(companyId, date, start, end);
+        if (!allowed) {
+            throw new IllegalStateException("Company closed or invalid slot");
         }
 
         BigDecimal totalAmount = services.stream()
