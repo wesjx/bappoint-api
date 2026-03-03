@@ -2,6 +2,7 @@ package com.wesleysilva.bappoint.Availability;
 
 import com.wesleysilva.bappoint.Appointments.AppointmentModel;
 import com.wesleysilva.bappoint.Appointments.AppointmentRepository;
+import com.wesleysilva.bappoint.Company.CompanyModel;
 import com.wesleysilva.bappoint.OffDay.OffDaysModel;
 import com.wesleysilva.bappoint.OffDay.OffDaysRepository;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursModel;
@@ -18,6 +19,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -124,5 +126,40 @@ public class SlotsTimesService {
 
             return !(slotEnd.isBefore(appointmentStart) || slotStart.isAfter(appointmentEnd));
         });
+    }
+
+    public boolean isRangeWithinSlots(UUID companyId, LocalDate date, LocalDateTime start, LocalDateTime end) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        WeekDay weekday = WeekDay.valueOf(dayOfWeek.name());
+
+        if (!offDaysRepository.findByDate(date).isEmpty()) return false;
+
+        SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
+        int intervalMinutes = settings.getAppointmentInterval().getMinutes();
+
+        List<OperatingHoursModel> hours = operatingHoursRepository
+                .findByWeekdayAndSettingsId(weekday, settings.getId());
+        if (hours.isEmpty()) return false;
+
+        OperatingHoursModel oh = hours.getFirst();
+        LocalDateTime dayStart = date.atTime(oh.getStartTime());
+        LocalDateTime dayEnd = date.atTime(oh.getEndTime());
+
+        long startMinutes = ChronoUnit.MINUTES.between(dayStart, start);
+        if (startMinutes % intervalMinutes != 0 || start.isBefore(dayStart) || start.isAfter(dayEnd)) {
+            return false;
+        }
+
+        if (end.isAfter(dayEnd)) return false;
+
+        LocalTime lunchStart = oh.getLunchStartTime();
+        LocalTime lunchEnd = oh.getLunchEndTime();
+        if (lunchStart != null && lunchEnd != null) {
+            LocalDateTime lunchFrom = date.atTime(lunchStart);
+            LocalDateTime lunchTo = date.atTime(lunchEnd);
+            return !start.isBefore(lunchTo) || !end.isAfter(lunchFrom);
+        }
+
+        return true;
     }
 }
