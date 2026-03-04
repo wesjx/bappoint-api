@@ -22,6 +22,9 @@ public class CompanyModel {
     @Column(name = "company_id")
     private UUID id;
 
+    @Column(unique = true)
+    private String slug;
+
     @Column(name = "stripe_account_id")
     private String stripeAccountId;
 

@@ -35,4 +35,6 @@ public class CreateCompanyDTO {
     @NotEmpty
     private String clerkUserId;
 
+    @NotEmpty
+    private String slug;
 }

@@ -36,4 +36,7 @@ public class UpdateCompanyDTO {
 
     @NotEmpty
     private String clerkUserId;
+
+    @NotEmpty
+    private String slug;
 }

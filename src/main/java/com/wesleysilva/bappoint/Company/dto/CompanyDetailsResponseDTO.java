@@ -47,4 +47,7 @@ public class CompanyDetailsResponseDTO {
     @NotEmpty
     private String clerkUserId;
 
+    @NotEmpty
+    private String slug;
+
 }
