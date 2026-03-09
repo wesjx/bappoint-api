@@ -6,9 +6,12 @@ import com.wesleysilva.bappoint.exceptions.AppointmentNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.stream.Collectors;
 
 @Hidden
 @ControllerAdvice
@@ -86,4 +89,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
 
+    private ResponseEntity<RestErrorMessage> validationException(MethodArgumentNotValidException exception) {
+        String errors = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        System.out.println("❌ Validation errors: " + errors);
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST, errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
 }
