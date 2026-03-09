@@ -5,6 +5,7 @@ import com.wesleysilva.bappoint.Company.dto.CompanyResponseDTO;
 import com.wesleysilva.bappoint.Company.dto.CreateCompanyDTO;
 import com.wesleysilva.bappoint.Company.dto.UpdateCompanyDTO;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
+import com.wesleysilva.bappoint.clerk.ClerkAuthContext;
 import com.wesleysilva.bappoint.exceptions.CompanyDeleteException;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
 import com.wesleysilva.bappoint.exceptions.EmailAlreadyExistsException;
@@ -19,12 +20,13 @@ import java.util.stream.Collectors;
 public class CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
+    private final ClerkAuthContext clerkAuthContext;
 
-    public CompanyService(CompanyRepository companyRepository, CompanyMapper companyMapper) {
+    public CompanyService(CompanyRepository companyRepository, CompanyMapper companyMapper, ClerkAuthContext clerkAuthContext) {
         this.companyRepository = companyRepository;
         this.companyMapper = companyMapper;
+        this.clerkAuthContext = clerkAuthContext;
     }
-
 
     @Transactional
     public CreateCompanyDTO createCompany(CreateCompanyDTO companyDTO) {
@@ -40,6 +42,7 @@ public class CompanyService {
         company.setStripeAccountId(companyDTO.getStripeAccountId());
         company.setClerkUserId(companyDTO.getClerkUserId());
         company.setSlug(companyDTO.getSlug());
+        company.setClerkUserId(companyDTO.getClerkUserId());
 
         if (companyDTO.getSettings() != null) {
             SettingsModel settings = new SettingsModel();
@@ -64,23 +67,36 @@ public class CompanyService {
     @Transactional(readOnly = true)
     public List<CompanyResponseDTO> listCompanies() {
        List<CompanyModel> companyModel = companyRepository.findAll();
-        return companyModel.stream()
+        if(clerkAuthContext.isMaster()){
+            return companyModel.stream()
+                    .map(companyMapper::toResponseDTO)
+                    .collect(Collectors.toList());
+        }
+
+        String clerkUserId = clerkAuthContext.getCurrentClerkUserId();
+        return companyRepository.findAllByClerkUserId(clerkUserId)
+                .stream()
                 .map(companyMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CompanyDetailsResponseDTO getCompanyById(UUID id) {
-        CompanyModel companyModel = companyRepository.findById(id).orElseThrow(() -> new CompanyNotFoundException());
-        if (companyModel.getAppointments() != null) {
-            companyModel.getAppointments().size();
+        CompanyModel companyModel = companyRepository.findById(id).orElseThrow(CompanyNotFoundException::new);
+
+        if (!clerkAuthContext.isMaster()) {
+            String clerkUserId = clerkAuthContext.getCurrentClerkUserId();
+            if(!companyModel.getClerkUserId().equals(clerkUserId)){
+                throw new CompanyNotFoundException();
+            }
         }
+
         return companyMapper.toDetailsResponseDTO(companyModel);
     }
 
     @Transactional
     void deleteCompany(UUID companyId) {
-        CompanyModel companyModel = companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException());
+        CompanyModel companyModel = companyRepository.findById(companyId).orElseThrow(CompanyNotFoundException::new);
 
         try{
             companyRepository.delete(companyModel);
@@ -91,7 +107,15 @@ public class CompanyService {
 
     @Transactional
     public CompanyResponseDTO updateCompany(UUID companyId, UpdateCompanyDTO updateDTO) {
-        CompanyModel existingCompany = companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException());
+        CompanyModel existingCompany = companyRepository.findById(companyId).orElseThrow(CompanyNotFoundException::new);
+
+        if (!clerkAuthContext.isMaster()) {
+            String clerkUserId = clerkAuthContext.getCurrentClerkUserId();
+            if (!existingCompany.getClerkUserId().equals(clerkUserId)) {
+                throw new CompanyNotFoundException();
+            }
+        }
+
         CompanyModel updatedCompany = companyMapper.toUpdateCompany(updateDTO, existingCompany);
         updatedCompany = companyRepository.save(updatedCompany);
         return companyMapper.toResponseDTO(updatedCompany);
