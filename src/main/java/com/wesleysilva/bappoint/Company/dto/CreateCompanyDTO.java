@@ -32,7 +32,6 @@ public class CreateCompanyDTO {
     @NotNull
     private String stripeAccountId;
 
-    @NotEmpty
     private String clerkUserId;
 
     @NotEmpty
