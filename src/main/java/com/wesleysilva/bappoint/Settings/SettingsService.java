@@ -6,9 +6,9 @@ import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
 import com.wesleysilva.bappoint.Settings.dto.UpdateSettingsDTO;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
 import com.wesleysilva.bappoint.exceptions.SettingsNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -24,6 +24,7 @@ public class SettingsService {
         this.settingsMapper = settingsMapper;
     }
 
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     public SettingsAllDetailsDTO getByCompanyId(UUID companyId) {
         CompanyModel company = companyRepository
                 .findById(companyId)
@@ -38,6 +39,7 @@ public class SettingsService {
         return settingsMapper.toResponseAllDetails(settings);
     }
 
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     public UpdateSettingsDTO updateByCompanyId(UUID companyId, UpdateSettingsDTO updateSettingsDTO) {
         CompanyModel company = companyRepository
                 .findById(companyId)

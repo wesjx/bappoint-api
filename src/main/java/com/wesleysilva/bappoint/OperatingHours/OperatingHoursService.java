@@ -8,16 +8,14 @@ import com.wesleysilva.bappoint.OperatingHours.dto.OperatingHoursResponseDTO;
 import com.wesleysilva.bappoint.OperatingHours.dto.UpdateOperatingHoursDTO;
 import com.wesleysilva.bappoint.Settings.SettingsModel;
 import com.wesleysilva.bappoint.Settings.SettingsRepository;
-import com.wesleysilva.bappoint.enums.WeekDay;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
 import com.wesleysilva.bappoint.exceptions.ExistsWeekDayException;
 import com.wesleysilva.bappoint.exceptions.OperatingHoursNotFoundException;
 import com.wesleysilva.bappoint.exceptions.SettingsNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,17 +26,16 @@ public class OperatingHoursService {
 
     private final OperatingHoursRepository operatingHoursRepository;
     private final OperatingHoursMapper operatingHoursMapper;
-    private final SettingsRepository settingsRepository;
     private final CompanyRepository companyRepository;
 
-    public OperatingHoursService(OperatingHoursRepository operatingHoursRepository, OperatingHoursMapper operatingHoursMapper, SettingsRepository settingsRepository, CompanyRepository companyRepository) {
+    public OperatingHoursService(OperatingHoursRepository operatingHoursRepository, OperatingHoursMapper operatingHoursMapper, CompanyRepository companyRepository) {
         this.operatingHoursRepository = operatingHoursRepository;
         this.operatingHoursMapper = operatingHoursMapper;
-        this.settingsRepository = settingsRepository;
         this.companyRepository = companyRepository;
     }
 
     @Transactional
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     public CreateOperatingHoursDTO createOperatingHours(UUID companyId, CreateOperatingHoursDTO operatingHoursDTO) {
         OperatingHoursModel operatingHoursModel = operatingHoursMapper.toEntity(operatingHoursDTO);
 
@@ -65,6 +62,7 @@ public class OperatingHoursService {
         return operatingHoursMapper.toCreate(operatingHoursModel);
     }
 
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     public List<OperatingHoursResponseDTO> getAllOperatingHours() {
         List<OperatingHoursModel> operatingHoursModels = operatingHoursRepository.findAll();
         return operatingHoursModels.stream()
@@ -72,12 +70,16 @@ public class OperatingHoursService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOperatingHoursOwner(#operatingHoursId)")
     public OperatingHoursAllDetailsDTO getOperatingHoursById(UUID operatingHoursId) {
         OperatingHoursModel operatingHours = operatingHoursRepository.findById(operatingHoursId)
                 .orElseThrow(OperatingHoursNotFoundException::new);
         return operatingHoursMapper.toResponseAllDetails(operatingHours);
     }
 
+    @Transactional
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOperatingHoursOwner(#operatingHoursId)")
     public void deleteOperatingHoursById(UUID operatingHoursId) {
         OperatingHoursModel operatingHoursModel = operatingHoursRepository.findById(operatingHoursId)
                         .orElseThrow(OperatingHoursNotFoundException::new);
@@ -88,6 +90,8 @@ public class OperatingHoursService {
         }
     }
 
+    @Transactional
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOperatingHoursOwner(#operatingHoursId)")
     public UpdateOperatingHoursDTO updateService(UUID operatingHoursID, UpdateOperatingHoursDTO operatingHoursDTO) {
         Optional<OperatingHoursModel> existingOperatingHours = Optional.of(operatingHoursRepository.findById(operatingHoursID)
                 .orElseThrow(OperatingHoursNotFoundException::new));
