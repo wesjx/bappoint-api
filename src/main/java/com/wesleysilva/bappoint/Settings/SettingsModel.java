@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.Settings;
 
+import com.wesleysilva.bappoint.Company.CompanyModel;
 import com.wesleysilva.bappoint.OffDay.OffDaysModel;
 import com.wesleysilva.bappoint.OperatingHours.OperatingHoursModel;
 import com.wesleysilva.bappoint.Services.ServiceModel;
@@ -23,6 +24,10 @@ public class SettingsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @OneToOne(mappedBy = "settings")
+    private CompanyModel company;
+
 
     @NotNull
     @Enumerated(EnumType.ORDINAL)
