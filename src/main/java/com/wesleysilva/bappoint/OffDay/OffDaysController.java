@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class OffDaysController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(summary = "Create off day")
     @ApiResponses({
             @ApiResponse(
@@ -64,6 +66,7 @@ public class OffDaysController {
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(summary = "List all off days")
     @ApiResponses({
             @ApiResponse(
@@ -97,6 +100,7 @@ public class OffDaysController {
     }
 
     @GetMapping("/list/{offDaysId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOffDayOwner(#offDaysId)")
     @Operation(summary = "List off day by id")
     @ApiResponses({
             @ApiResponse(
@@ -129,6 +133,7 @@ public class OffDaysController {
     }
 
     @DeleteMapping("/delete/{offDaysId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOffDayOwner(#offDaysId)")
     @Operation(
             summary = "Delete a off day",
             description = "Permanently removes a off day from the system by UUID.",
@@ -147,6 +152,7 @@ public class OffDaysController {
     }
 
     @PutMapping("/update/{offDaysId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOffDayOwner(#offDaysId)")
     @Operation(summary = "Update off day")
     @ApiResponses({
             @ApiResponse(
