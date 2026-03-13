@@ -6,6 +6,9 @@ import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.Availability.SlotTimesDTO;
 import com.wesleysilva.bappoint.Availability.SlotsTimesService;
+import com.wesleysilva.bappoint.clerk.ClerkAuthContext;
+import com.wesleysilva.bappoint.clerk.ClerkSecurityService;
+import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,237 +32,130 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final SlotsTimesService slotsTimesService;
+    private final ClerkAuthContext clerkAuthContext;
+    private final ClerkSecurityService clerkSecurityService;
 
-    public AppointmentController(AppointmentService appointmentService, SlotsTimesService slotsTimesService) {
+    public AppointmentController(AppointmentService appointmentService,
+                                 SlotsTimesService slotsTimesService,
+                                 ClerkAuthContext clerkAuthContext,
+                                 ClerkSecurityService clerkSecurityService) {
         this.appointmentService = appointmentService;
         this.slotsTimesService = slotsTimesService;
+        this.clerkAuthContext = clerkAuthContext;
+        this.clerkSecurityService = clerkSecurityService;
     }
 
     @GetMapping("/available-times")
     @Operation(summary = "List available times")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Success",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            name = "available-time-list",
-                                            summary = "List of available times",
-                                            value = """
-                                                    [
-                                                      {
-                                                        "start": "2026-02-06T13:00",
-                                                        "end": "2026-02-06T13:15"
-                                                      }
-                                                    ]
-                                                    """
-                                    )
-                            }
-                    )
-            ),
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(name = "available-time-list", summary = "List of available times",
+                                    value = """
+                                            [{ "start": "2026-02-06T13:00", "end": "2026-02-06T13:15" }]
+                                            """))),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<SlotTimesDTO>> getAvailableTimes(@PathVariable UUID companyId, @RequestParam String date) {
-        List<SlotTimesDTO> slotTimes = slotsTimesService.findAvailableSlots(companyId, date);
-        return ResponseEntity.ok(slotTimes);
+    public ResponseEntity<List<SlotTimesDTO>> getAvailableTimes(
+            @PathVariable UUID companyId,
+            @RequestParam String date) {
+        return ResponseEntity.ok(slotsTimesService.findAvailableSlots(companyId, date));
     }
 
-    @GetMapping("/list")
-    @Transactional(readOnly = true)
-    @Operation(summary = "List appointments")
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Success",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            name = "appointment-list",
-                                            summary = "List of appointments",
-                                            value = """
-                                                    [
-                                                                       {
-                                                                          "appointmentDate": "2026-02-12",
-                                                                          "appointmentStatus": "CONFIRMED",
-                                                                          "companyId": "6eab4b1c-b25c-41ac-b837-f4c3b0415c68",
-                                                                          "costumerEmail": "john.silva@email.com",
-                                                                          "costumerName": "John Silva",
-                                                                          "costumerPhone": "+353 083 123-4567",
-                                                                          "endTime": "2026-02-12T12:45:00",
-                                                                          "id": "6446b6a6-5f52-407e-bc53-56c1f7a95f3e",
-                                                                          "serviceIds": [
-                                                                              "f5e590a0-1514-4bb6-b8cb-8313e1b38698"
-                                                                          ],
-                                                                          "startTime": "2026-02-12T12:00:00",
-                                                                          "totalAmount": 100.0
-                                                                       }
-                                                    ]
-                                                    """
-                                    )
-                            }
-                    )
-            ),
-            @ApiResponse(responseCode = "500", description = "Server error")
-    })
-    public ResponseEntity<List<AppointmentAllDetailsDTO>> listAppointments(@RequestParam int page, int itemsPerPage) {
-        List<AppointmentAllDetailsDTO> appointments = appointmentService.listAppointments(page, itemsPerPage);
-
-        return ResponseEntity.status(HttpStatus.OK).body(appointments);
-    }
-
-    @GetMapping("/{appointmentId}")
-    @Operation(summary = "List appointments")
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Success",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            name = "appointment-by-id-list",
-                                            summary = "List of appointments filtered by id",
-                                            value = """
-                                                                       {
-                                                                          "appointmentDate": "2026-02-12",
-                                                                          "appointmentStatus": "CONFIRMED",
-                                                                          "companyId": "6eab4b1c-b25c-41ac-b837-f4c3b0415c68",
-                                                                          "costumerEmail": "john.silva@email.com",
-                                                                          "costumerName": "John Silva",
-                                                                          "costumerPhone": "+353 083 123-4567",
-                                                                          "endTime": "2026-02-12T12:45:00",
-                                                                          "id": "6446b6a6-5f52-407e-bc53-56c1f7a95f3e",
-                                                                          "serviceIds": [
-                                                                              "f5e590a0-1514-4bb6-b8cb-8313e1b38698"
-                                                                          ],
-                                                                          "startTime": "2026-02-12T12:00:00",
-                                                                          "totalAmount": 100.0
-                                                                       }
-                                                    """
-                                    )
-                            }
-                    )
-            ),
-            @ApiResponse(responseCode = "500", description = "Server error"),
-            @ApiResponse(responseCode = "404", description = "Appointment not found")
-    })
-    public ResponseEntity<AppointmentAllDetailsDTO> listAppointmentById(@PathVariable UUID appointmentId) {
-        AppointmentAllDetailsDTO appointment = appointmentService.getAppointmentById(appointmentId);
-        return ResponseEntity.ok(appointment);
-    }
 
     @PostMapping("/create")
     @Operation(summary = "Create appointment")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Success",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            name = "appointment",
-                                            summary = "Appointment created",
-                                            value = """
-                                                    [
-                                                                       {
-                                                                          "appointmentDate": "2026-02-12",
-                                                                          "appointmentStatus": "CONFIRMED",
-                                                                          "companyId": "6eab4b1c-b25c-41ac-b837-f4c3b0415c68",
-                                                                          "costumerEmail": "john.silva@email.com",
-                                                                          "costumerName": "John Silva",
-                                                                          "costumerPhone": "+353 083 123-4567",
-                                                                          "endTime": "2026-02-12T12:45:00",
-                                                                          "id": "6446b6a6-5f52-407e-bc53-56c1f7a95f3e",
-                                                                          "serviceIds": [
-                                                                              "f5e590a0-1514-4bb6-b8cb-8313e1b38698"
-                                                                          ],
-                                                                          "startTime": "2026-02-12T12:00:00",
-                                                                          "totalAmount": 100.0
-                                                                       }
-                                                    ]
-                                                    """
-                                    )
-                            }
-                    )
-            ),
-            @ApiResponse(responseCode = "500", description = "Server error"),
+            @ApiResponse(responseCode = "201", description = "Created"),
             @ApiResponse(responseCode = "400", description = "Invalid data"),
-            @ApiResponse(responseCode = "409", description = "Time slot conflict")
+            @ApiResponse(responseCode = "409", description = "Time slot conflict"),
+            @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<CreateAppointmentDTO> createAppointment(@PathVariable UUID companyId, @RequestBody CreateAppointmentDTO appointmentDTO) {
-
+    public ResponseEntity<CreateAppointmentDTO> createAppointment(
+            @PathVariable UUID companyId,
+            @RequestBody CreateAppointmentDTO appointmentDTO) {
         CreateAppointmentDTO appointment = appointmentService.createAppointment(appointmentDTO, companyId);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
     }
 
+    @GetMapping("/list")
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('MASTER', 'COMPANY_ADMIN')")
+    @Operation(summary = "List appointments")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "500", description = "Server error")
+    })
+    public ResponseEntity<List<AppointmentAllDetailsDTO>> listAppointments(
+            @RequestParam int page,
+            @RequestParam int itemsPerPage,
+            @PathVariable UUID companyId) {
+
+        List<AppointmentAllDetailsDTO> appointments;
+
+        if (clerkAuthContext.isMaster()) {
+            appointments = appointmentService.listAppointments(page, itemsPerPage);
+        } else {
+            if (!clerkSecurityService.isCompanyOwner(companyId)) {
+                throw new CompanyNotFoundException();
+            }
+            appointments = appointmentService.listAppointments(page, itemsPerPage);
+        }
+
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/by-date")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
+    @Operation(summary = "List appointments by date")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "500", description = "Server error")
+    })
+    public ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(
+            @RequestParam LocalDate date,
+            @PathVariable UUID companyId) {
+        List<AppointmentReponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/{appointmentId}")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isAppointmentOwner(#appointmentId)")
+    @Operation(summary = "Get appointment by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "Appointment not found"),
+            @ApiResponse(responseCode = "500", description = "Server error")
+    })
+    public ResponseEntity<AppointmentAllDetailsDTO> listAppointmentById(
+            @PathVariable UUID appointmentId) {
+        return ResponseEntity.ok(appointmentService.getAppointmentById(appointmentId));
+    }
 
     @PutMapping("/update/{appointmentId}")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isAppointmentOwner(#appointmentId)")
     @Operation(summary = "Update appointment")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Success",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            name = "appointment updated",
-                                            summary = "Appointment updated",
-                                            value = """
-                                                                       {
-                                                                          "appointmentDate": "2026-02-12",
-                                                                          "appointmentStatus": "CONFIRMED",
-                                                                          "companyId": "6eab4b1c-b25c-41ac-b837-f4c3b0415c68",
-                                                                          "costumerEmail": "john.silva@email.com",
-                                                                          "costumerName": "John Silva",
-                                                                          "costumerPhone": "+353 083 123-4567",
-                                                                          "endTime": "2026-02-12T12:45:00",
-                                                                          "id": "6446b6a6-5f52-407e-bc53-56c1f7a95f3e",
-                                                                          "serviceIds": [
-                                                                              "f5e590a0-1514-4bb6-b8cb-8313e1b38698"
-                                                                          ],
-                                                                          "startTime": "2026-02-12T12:00:00",
-                                                                          "totalAmount": 100.0
-                                                                       }
-                                                    """
-                                    )
-                            }
-                    )
-            ),
-            @ApiResponse(responseCode = "500", description = "Server error"),
+            @ApiResponse(responseCode = "200", description = "Updated"),
             @ApiResponse(responseCode = "404", description = "ID not found"),
-            @ApiResponse(responseCode = "409", description = "Time slot conflict")
+            @ApiResponse(responseCode = "409", description = "Time slot conflict"),
+            @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<?> updateAppointment(@RequestBody UpdateAppointmentDTO appointmentResponseDTO, @PathVariable UUID appointmentId) {
-        UpdateAppointmentDTO appointment = appointmentService.updateAppointment(appointmentId, appointmentResponseDTO);
-
-        if (appointment != null) {
-            return ResponseEntity.ok(appointment);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UpdateAppointmentDTO> updateAppointment(
+            @PathVariable UUID appointmentId,
+            @RequestBody UpdateAppointmentDTO appointmentDTO) {
+        return ResponseEntity.ok(appointmentService.updateAppointment(appointmentId, appointmentDTO));
     }
 
     @DeleteMapping("/delete/{appointmentId}")
-    @Operation(summary = "Update appointment")
+    @PreAuthorize("hasRole('MASTER')")
+    @Operation(summary = "Delete appointment")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Delete successfully"),
-            @ApiResponse(responseCode = "404", description = "ID not found"),
+            @ApiResponse(responseCode = "204", description = "Deleted"),
+            @ApiResponse(responseCode = "404", description = "ID not found")
     })
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID appointmentId) {
         appointmentService.deleteAppointment(appointmentId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/by-date")
-    public ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(@PathVariable LocalDate date, UUID companyId) {
-        List<AppointmentReponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(appointments);
     }
 }
