@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class CompanyController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('MASTER')")
     @Operation(
             summary = "Create a new company",
             description = "Creates a new company record in the system and returns its details.",
@@ -46,6 +48,7 @@ public class CompanyController {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('MASTER')")
     @GetMapping("/list")
     @Operation(
             summary = "List all companies",
@@ -62,6 +65,7 @@ public class CompanyController {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     @GetMapping("/list/{companyId}")
     @Operation(
             summary = "Get company by ID",
@@ -79,6 +83,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/delete/{companyId}")
+    @PreAuthorize("hasRole('MASTER')")
     @Operation(
             summary = "Delete a company",
             description = "Permanently removes a company from the system by UUID.",
@@ -97,6 +102,7 @@ public class CompanyController {
     }
 
     @PutMapping("/update/{companyId}")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(
             summary = "Update a company’s information",
             description = "Updates the information of an existing company and returns the updated entity.",

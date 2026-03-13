@@ -28,7 +28,6 @@ public class CompanyService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('MASTER')")
     public CreateCompanyDTO createCompany(CreateCompanyDTO companyDTO) {
         if (companyRepository.existsByEmail(companyDTO.getEmail())) {
             throw new EmailAlreadyExistsException();
@@ -66,7 +65,6 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('MASTER')")
     public List<CompanyResponseDTO> listCompanies() {
        List<CompanyModel> companyModel = companyRepository.findAll();
         return companyModel.stream()
@@ -75,7 +73,6 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isOwner(#id)")
     public CompanyDetailsResponseDTO getCompanyById(UUID id) {
         CompanyModel company = companyRepository.findById(id)
                 .orElseThrow(CompanyNotFoundException::new);
@@ -87,7 +84,6 @@ public class CompanyService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('MASTER')")
     void deleteCompany(UUID companyId) {
         CompanyModel companyModel = companyRepository.findById(companyId).orElseThrow(CompanyNotFoundException::new);
 
@@ -99,7 +95,6 @@ public class CompanyService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isOwner(#companyId)")
     public CompanyResponseDTO updateCompany(UUID companyId, UpdateCompanyDTO updateDTO) {
         CompanyModel existingCompany = companyRepository.findById(companyId)
                 .orElseThrow(CompanyNotFoundException::new);
