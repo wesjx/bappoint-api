@@ -76,7 +76,7 @@ public class ClerkJwtFilter extends OncePerRequestFilter {
             String clerkUserId = claims.getSubject();
 
             // Get the role of public_metadata
-            String role = "MASTER";
+            String role = "COMPANY_ADMIN";
             Object metadata = claims.get("public_metadata");
             if (metadata instanceof Map<?, ?> map && map.get("role") != null) {
                 role = map.get("role").toString();
