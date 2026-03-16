@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class SettingsController {
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(
             summary = "Get company settings",
             description = "Retrieves complete company settings with all nested details (services, operating hours, off days). Returns 404 if company or settings not found."
@@ -93,6 +95,7 @@ public class SettingsController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(
             summary = "Update company settings",
             description = "Updates company settings including appointment interval, cancellation rules, services, operating hours and off days. Partial updates supported for nested collections."

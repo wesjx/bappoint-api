@@ -24,7 +24,6 @@ public class SettingsService {
         this.settingsMapper = settingsMapper;
     }
 
-    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     public SettingsAllDetailsDTO getByCompanyId(UUID companyId) {
         CompanyModel company = companyRepository
                 .findById(companyId)
@@ -39,7 +38,6 @@ public class SettingsService {
         return settingsMapper.toResponseAllDetails(settings);
     }
 
-    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     public UpdateSettingsDTO updateByCompanyId(UUID companyId, UpdateSettingsDTO updateSettingsDTO) {
         CompanyModel company = companyRepository
                 .findById(companyId)

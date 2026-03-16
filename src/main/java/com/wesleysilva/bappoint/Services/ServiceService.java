@@ -33,7 +33,6 @@ public class ServiceService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     public CreateServiceDTO createService(CreateServiceDTO serviceDTO, UUID companyId) {
         ServiceModel serviceModel = serviceMapper.toEntity(serviceDTO);
 
@@ -54,16 +53,14 @@ public class ServiceService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
-    public List<ServiceResponseDTO> listAllServices() {
-        List<ServiceModel> serviceModels = serviceRepository.findAll();
+    public List<ServiceResponseDTO> listAllServices(UUID companyId) {
+        List<ServiceModel> serviceModels = serviceRepository.findBySettingsCompanyId(companyId);
         return serviceModels.stream()
                 .map(serviceMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isServiceOwner(#serviceId)")
     public ServiceAllDetailsDTO getServiceById(UUID serviceId) {
         ServiceModel serviceModel = serviceRepository
                 .findById(serviceId)
@@ -72,14 +69,12 @@ public class ServiceService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isServiceOwner(#serviceId)")
     public void deleteService(UUID serviceId) {
         ServiceModel service = serviceRepository.findById(serviceId)
                 .orElseThrow(ServiceNotFoundException::new);
         serviceRepository.delete(service);
     }
 
-    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isServiceOwner(#serviceId)")
     public UpdateServiceDTO updateService(UUID serviceId, CreateServiceDTO serviceDTO) {
         Optional<ServiceModel> existingService = Optional.of(serviceRepository.findById(serviceId)
                 .orElseThrow(ServiceNotFoundException::new));

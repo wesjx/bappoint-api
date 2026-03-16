@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class ServicesController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(
             summary = "Create service for company",
             description = "Creates a new service for a specific company. Validates service name, price, duration and active status. Service is automatically associated with company settings."
@@ -87,6 +89,7 @@ public class ServicesController {
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(
             summary = "List services for company",
             description = "Returns all services associated with the company from the authenticated context. Does NOT require companyId parameter - uses company from JWT/security context."
@@ -128,12 +131,13 @@ public class ServicesController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<List<ServiceResponseDTO>> listServices() {
-        List<ServiceResponseDTO> serviceDTOS = serviceService.listAllServices();
+    public ResponseEntity<List<ServiceResponseDTO>> listServices(@PathVariable UUID companyId) {
+        List<ServiceResponseDTO> serviceDTOS = serviceService.listAllServices(companyId);
         return ResponseEntity.ok(serviceDTOS);
     }
 
     @GetMapping("/{serviceId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isServiceOwner(#serviceId)")
     @Operation(
             summary = "Get service by ID",
             description = "Retrieves complete details of a specific service by UUID, including company and settings information. Returns 404 if service not found."
@@ -187,6 +191,7 @@ public class ServicesController {
     }
 
     @DeleteMapping("/delete/{serviceId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isServiceOwner(#serviceId)")
     @Operation(
             summary = "Delete service",
             description = "Deletes a specific service by UUID. Returns 204 No Content on success (REST standard). Only active services can be deleted."
@@ -212,6 +217,7 @@ public class ServicesController {
     }
 
     @PutMapping("/update/{serviceId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isServiceOwner(#serviceId)")
     @Operation(
             summary = "Update service",
             description = "Updates an existing service by UUID. Supports partial updates - only sent fields will be modified. Required: name, price, duration. Validates business rules before update."

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class OperatingHoursController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(summary = "Create operating hours",
             description = "Creates operating hours for a company's schedule. Validates weekday, times, and active status.")
     @ApiResponses({
@@ -80,6 +82,7 @@ public class OperatingHoursController {
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isCompanyOwner(#companyId)")
     @Operation(
             summary = "List all operating hours",
             description = "Returns all operating hours records from the system. Useful for admin dashboards or schedule overview."
@@ -127,12 +130,13 @@ public class OperatingHoursController {
                     description = "Internal server error"
             )
     })
-    public ResponseEntity<List<OperatingHoursResponseDTO>> listOperatingHours(){
-        List<OperatingHoursResponseDTO> operatingHours = operatingHoursService.getAllOperatingHours();
+    public ResponseEntity<List<OperatingHoursResponseDTO>> listOperatingHours(@PathVariable UUID companyId) {
+        List<OperatingHoursResponseDTO> operatingHours = operatingHoursService.getAllOperatingHours(companyId);
         return ResponseEntity.status(HttpStatus.OK).body(operatingHours);
     }
 
     @GetMapping("/{operatingHoursId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOperatingHoursOwner(#operatingHoursId)")
     @Operation(
             summary = "Get operating hours by ID",
             description = "Retrieves complete details of a specific operating hours record by its UUID. Returns 404 if not found."
@@ -188,6 +192,7 @@ public class OperatingHoursController {
     }
 
     @DeleteMapping("/{operatingHoursId}")
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOperatingHoursOwner(#operatingHoursId)")
     @Operation(
             summary = "Delete operating hours by ID",
             description = "Deletes a specific operating hours record by its UUID. Returns 204 No Content on success."
@@ -207,11 +212,14 @@ public class OperatingHoursController {
                     description = "Internal server error"
             )
     })
-    void deleteOperatingHoursById(@PathVariable UUID operatingHoursId) {
+    public ResponseEntity<Void> deleteOperatingHoursById(@PathVariable UUID operatingHoursId) {
         operatingHoursService.deleteOperatingHoursById(operatingHoursId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update/{operatingHoursId}")
+
+    @PreAuthorize("hasRole('COMPANY_ADMIN') and @clerkSecurityService.isOperatingHoursOwner(#operatingHoursId)")
     @Operation(
             summary = "Update operating hours",
             description = "Updates an existing operating hours record by UUID. Required fields: startTime, endTime, weekday. Optional: lunch times and active status."

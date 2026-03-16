@@ -14,4 +14,5 @@ public interface OperatingHoursRepository extends JpaRepository<OperatingHoursMo
 
     List<OperatingHoursModel> findByWeekdayAndSettingsId(WeekDay weekday, UUID settingsId);
 
+    List<OperatingHoursModel> findBySettingsCompanyId(UUID companyId);
 }
