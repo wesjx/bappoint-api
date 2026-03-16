@@ -94,8 +94,8 @@ public class OffDaysController {
             ),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    public ResponseEntity<List<OffDaysResponseDTO>> getAllOffDays(){
-        List<OffDaysResponseDTO> offDaysDTOs = offDaysService.getAllOffDays();
+    public ResponseEntity<List<OffDaysResponseDTO>> getAllOffDays(@PathVariable UUID companyId) {
+        List<OffDaysResponseDTO> offDaysDTOs = offDaysService.getAllOffDays(companyId);
         return ResponseEntity.status(HttpStatus.OK).body(offDaysDTOs);
     }
 

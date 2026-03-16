@@ -52,8 +52,8 @@ public class OffDaysService {
     }
 
     @Transactional(readOnly = true)
-    public List<OffDaysResponseDTO> getAllOffDays(){
-        List<OffDaysModel> offDaysModels = offDaysRepository.findAll();
+    public List<OffDaysResponseDTO> getAllOffDays(UUID companyId) {
+        List<OffDaysModel> offDaysModels = offDaysRepository.findBySettingsCompanyId(companyId);
         return offDaysModels.stream()
                 .map(offDaysMapper::toResponse)
                 .collect(Collectors.toList());
