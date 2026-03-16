@@ -1,6 +1,5 @@
 package com.wesleysilva.bappoint.infra;
 
-import com.wesleysilva.bappoint.OffDay.dto.OffDaysAllDetailsDTO;
 import com.wesleysilva.bappoint.exceptions.*;
 import com.wesleysilva.bappoint.exceptions.AppointmentNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -72,7 +71,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(OffDayNotFoundException.class)
-    private ResponseEntity<RestErrorMessage> offDayNotFound(OffDaysAllDetailsDTO exception) {
+    private ResponseEntity<RestErrorMessage> offDayNotFound(OffDayNotFoundException exception) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "OffDay not found.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
