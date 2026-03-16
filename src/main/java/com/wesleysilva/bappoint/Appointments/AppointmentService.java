@@ -115,8 +115,8 @@ public class AppointmentService {
     }
 
 
-    public List<AppointmentAllDetailsDTO> listAppointments(int page, int itemsPerPage) {
-        Page<AppointmentModel> appointments = appointmentRepository.findAll(PageRequest.of(page, itemsPerPage) );
+    public List<AppointmentAllDetailsDTO> listAppointments(UUID companyId, int page, int itemsPerPage) {
+        Page<AppointmentModel> appointments = appointmentRepository.findByCompanyId(companyId, PageRequest.of(page, itemsPerPage));
         return appointments.stream()
                 .map(appointmentMapper::toResponseAllDetailsDTO)
                 .collect(Collectors.toList());
