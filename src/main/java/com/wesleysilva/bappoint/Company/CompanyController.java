@@ -93,12 +93,8 @@ public class CompanyController {
             }
     )
     public ResponseEntity<String> deleteCompany(@PathVariable UUID companyId) {
-        if (companyService.getCompanyById(companyId) != null) {
-            companyService.deleteCompany(companyId);
-            return ResponseEntity.ok("Company ID: " + companyId + " deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company not found.");
-        }
+        companyService.deleteCompany(companyId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update/{companyId}")
