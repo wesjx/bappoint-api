@@ -94,12 +94,12 @@ public class AppointmentController {
         List<AppointmentAllDetailsDTO> appointments;
 
         if (clerkAuthContext.isMaster()) {
-            appointments = appointmentService.listAppointments(page, itemsPerPage);
+            appointments = appointmentService.listAppointments(companyId, page, itemsPerPage);
         } else {
             if (!clerkSecurityService.isCompanyOwner(companyId)) {
                 throw new CompanyNotFoundException();
             }
-            appointments = appointmentService.listAppointments(page, itemsPerPage);
+            appointments = appointmentService.listAppointments(companyId, page, itemsPerPage);
         }
 
         return ResponseEntity.ok(appointments);
