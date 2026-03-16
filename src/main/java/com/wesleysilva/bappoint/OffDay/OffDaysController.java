@@ -4,7 +4,6 @@ import com.wesleysilva.bappoint.OffDay.dto.CreateOffDayDTO;
 import com.wesleysilva.bappoint.OffDay.dto.OffDayUpdateDTO;
 import com.wesleysilva.bappoint.OffDay.dto.OffDaysAllDetailsDTO;
 import com.wesleysilva.bappoint.OffDay.dto.OffDaysResponseDTO;
-import com.wesleysilva.bappoint.exceptions.OffDayNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -142,13 +141,9 @@ public class OffDaysController {
                     @ApiResponse(responseCode = "404", description = "Off day not found")
             }
     )
-    void deleteOffDays(@PathVariable UUID offDaysId){
-
-        if (offDaysService.getOffDaysById(offDaysId) != null ){
+    public ResponseEntity<Void> deleteOffDays(@PathVariable UUID offDaysId){
         offDaysService.deleteOffDaysById(offDaysId);
-        } else {
-            throw new OffDayNotFoundException();
-        }
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update/{offDaysId}")
