@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
-                                "/appointments/create"
+                                "/appointments/create",
+                                "/api/webhooks/stripe"
                         ).permitAll()
                         // MASTER
                         .requestMatchers("/companies/create").hasRole("MASTER")
