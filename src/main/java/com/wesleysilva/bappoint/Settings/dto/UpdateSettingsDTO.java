@@ -23,11 +23,9 @@ public class UpdateSettingsDTO {
     @Min(value = 0, message = "Cancellation interval cannot be negative")
     private Integer maxCancellationInterval;
 
-    @NotEmpty(message = "Services cannot be empty")
     @Valid
     private List<ServiceAllDetailsDTO> services;
 
-    @NotEmpty(message = "Operating hours cannot be empty")
     @Valid
     private List<OperatingHoursAllDetailsDTO> operatingHours;
 
