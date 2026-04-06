@@ -4,6 +4,7 @@ import com.wesleysilva.bappoint.Company.dto.CompanyDetailsResponseDTO;
 import com.wesleysilva.bappoint.Company.dto.CompanyResponseDTO;
 import com.wesleysilva.bappoint.Company.dto.CreateCompanyDTO;
 import com.wesleysilva.bappoint.Company.dto.UpdateCompanyDTO;
+import com.wesleysilva.bappoint.docs.CompanyControllerDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/companies")
-public class CompanyController {
+public class CompanyController implements CompanyControllerDoc {
 
     private final CompanyService companyService;
 
