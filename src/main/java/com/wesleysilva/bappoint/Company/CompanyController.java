@@ -21,7 +21,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/companies")
-@Tag(name = "Company", description = "Endpoints for managing company details (create, list, update, and delete).")
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -32,16 +31,6 @@ public class CompanyController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('MASTER')")
-    @Operation(
-            summary = "Create a new company",
-            description = "Creates a new company record in the system and returns its details.",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "Company successfully created",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = CompanyResponseDTO.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid company data provided")
-            }
-    )
     public ResponseEntity<CreateCompanyDTO> createCompany(@Valid @RequestBody CreateCompanyDTO company) {
         CreateCompanyDTO newCompany = companyService.createCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
@@ -50,15 +39,6 @@ public class CompanyController {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('MASTER')")
     @GetMapping("/list")
-    @Operation(
-            summary = "List all companies",
-            description = "Retrieves a list of all registered companies.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "List successfully retrieved",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = CompanyResponseDTO.class)))
-            }
-    )
     public ResponseEntity<List<CompanyResponseDTO>> listCompanies() {
         List<CompanyResponseDTO> companyList = companyService.listCompanies();
         return ResponseEntity.ok(companyList);
@@ -67,16 +47,6 @@ public class CompanyController {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     @GetMapping("/list/{companyId}")
-    @Operation(
-            summary = "Get company by ID",
-            description = "Retrieves the details of a company based on its UUID.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Company found",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = CompanyResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Company not found")
-            }
-    )
     public ResponseEntity<CompanyDetailsResponseDTO> getCompanyById(@PathVariable UUID companyId) {
         CompanyDetailsResponseDTO company = companyService.getCompanyById(companyId);
         return ResponseEntity.ok(company);
@@ -84,14 +54,6 @@ public class CompanyController {
 
     @DeleteMapping("/delete/{companyId}")
     @PreAuthorize("hasRole('MASTER')")
-    @Operation(
-            summary = "Delete a company",
-            description = "Permanently removes a company from the system by UUID.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Company successfully deleted"),
-                    @ApiResponse(responseCode = "404", description = "Company not found")
-            }
-    )
     public ResponseEntity<String> deleteCompany(@PathVariable UUID companyId) {
         companyService.deleteCompany(companyId);
         return ResponseEntity.noContent().build();
@@ -99,16 +61,6 @@ public class CompanyController {
 
     @PutMapping("/update/{companyId}")
     @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
-    @Operation(
-            summary = "Update a company’s information",
-            description = "Updates the information of an existing company and returns the updated entity.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Company successfully updated",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = CompanyResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Company not found")
-            }
-    )
     public ResponseEntity<?> updateCompany(@PathVariable UUID companyId, @Valid @RequestBody UpdateCompanyDTO companyDTO) {
         CompanyResponseDTO company = companyService.updateCompany(companyId, companyDTO);
         if (company != null) {
