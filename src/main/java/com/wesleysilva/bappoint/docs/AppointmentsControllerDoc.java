@@ -91,6 +91,7 @@ public interface AppointmentsControllerDoc {
             @PathVariable UUID appointmentId,
             @RequestBody UpdateAppointmentDTO appointmentDTO);
 
+
     @Operation(summary = "Delete appointment")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Deleted"),
