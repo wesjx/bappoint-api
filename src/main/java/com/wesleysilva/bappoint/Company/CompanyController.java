@@ -70,4 +70,11 @@ public class CompanyController implements CompanyControllerDoc {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company not found.");
         }
     }
+
+    @GetMapping("/clerk/{clerkUserId}")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
+    public ResponseEntity<CompanyDetailsResponseDTO> getByClerkUserId(@PathVariable String clerkUserId) {
+        CompanyDetailsResponseDTO company = companyService.getCompanyByClerkUserId(clerkUserId);
+        return ResponseEntity.ok(company);
+    }
 }
