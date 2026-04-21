@@ -103,4 +103,15 @@ public class CompanyService {
         return companyMapper.toResponseDTO(updatedCompany);
     }
 
+    @Transactional(readOnly = true)
+    public CompanyDetailsResponseDTO getCompanyByClerkUserId(String clerkUserId) {
+        CompanyModel company = companyRepository.findByClerkUserId(clerkUserId)
+                .orElseThrow(CompanyNotFoundException::new);
+
+        if (company.getAppointments() != null) {
+            company.getAppointments().size();
+        }
+        return companyMapper.toDetailsResponseDTO(company);
+    }
+
 }
