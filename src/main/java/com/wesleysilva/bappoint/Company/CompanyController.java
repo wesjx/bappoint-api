@@ -72,7 +72,7 @@ public class CompanyController implements CompanyControllerDoc {
     }
 
     @GetMapping("/clerk/{clerkUserId}")
-    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
+//    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     public ResponseEntity<CompanyDetailsResponseDTO> getByClerkUserId(@PathVariable String clerkUserId) {
         CompanyDetailsResponseDTO company = companyService.getCompanyByClerkUserId(clerkUserId);
         return ResponseEntity.ok(company);
