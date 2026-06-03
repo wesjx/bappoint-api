@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +33,11 @@ public class CreateCompanyDTO {
 
     @NotNull
     private String stripeAccountId;
+
+    @NotNull
+    @DecimalMin("0.0")
+    @DecimalMax("100.0")
+    private BigDecimal depositPercentage;
 
     private String clerkUserId;
 
