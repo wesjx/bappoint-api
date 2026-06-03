@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,6 +31,11 @@ public class UpdateCompanyDTO {
     @Valid
     @NotNull
     private String stripeAccountId;
+
+    @NotNull
+    @DecimalMin("0.0")
+    @DecimalMax("100.0")
+    private BigDecimal depositPercentage;
 
     @Valid
     @NotNull
