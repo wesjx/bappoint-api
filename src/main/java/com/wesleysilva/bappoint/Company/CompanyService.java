@@ -42,6 +42,7 @@ public class CompanyService {
         company.setClerkUserId(companyDTO.getClerkUserId());
         company.setSlug(companyDTO.getSlug());
         company.setClerkUserId(companyDTO.getClerkUserId());
+        company.setDepositPercentage(companyDTO.getDepositPercentage());
 
         if (companyDTO.getSettings() != null) {
             SettingsModel settings = new SettingsModel();
