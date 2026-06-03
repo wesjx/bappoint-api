@@ -81,8 +81,11 @@ public class StripeService {
 
         // Pricing
         BigDecimal totalAmount = appointment.getTotalAmount();
-        BigDecimal halfAmount = totalAmount.multiply(BigDecimal.valueOf(0.5));
+        BigDecimal percentage = company.getDepositPercentage() != null
+                ? company.getDepositPercentage().divide(BigDecimal.valueOf(100))
+                : BigDecimal.valueOf(0.5);
 
+        BigDecimal halfAmount = totalAmount.multiply(percentage);
         long totalCents = halfAmount
                 .setScale(2, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
