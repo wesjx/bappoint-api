@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +43,9 @@ public class CompanyModel {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "deposit_percentage")
+    private BigDecimal depositPercentage;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "settings_id")
