@@ -1,10 +1,10 @@
 package com.wesleysilva.bappoint.docs;
 
-import com.wesleysilva.bappoint.Appointments.dto.AppointmentAllDetailsDTO;
-import com.wesleysilva.bappoint.Appointments.dto.AppointmentReponseDTO;
-import com.wesleysilva.bappoint.Appointments.dto.CreateAppointmentDTO;
-import com.wesleysilva.bappoint.Appointments.dto.UpdateAppointmentDTO;
-import com.wesleysilva.bappoint.Availability.SlotTimesDTO;
+import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
+import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
+import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
+import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
+import com.wesleysilva.bappoint.availability.SlotTimesDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

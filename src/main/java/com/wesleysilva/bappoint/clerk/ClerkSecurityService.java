@@ -1,10 +1,10 @@
 package com.wesleysilva.bappoint.clerk;
 
-import com.wesleysilva.bappoint.Appointments.AppointmentRepository;
-import com.wesleysilva.bappoint.Company.CompanyRepository;
-import com.wesleysilva.bappoint.OffDay.OffDaysRepository;
-import com.wesleysilva.bappoint.OperatingHours.OperatingHoursRepository;
-import com.wesleysilva.bappoint.Services.ServiceRepository;
+import com.wesleysilva.bappoint.appointments.AppointmentRepository;
+import com.wesleysilva.bappoint.company.CompanyRepository;
+import com.wesleysilva.bappoint.offday.OffDaysRepository;
+import com.wesleysilva.bappoint.operatinghours.OperatingHoursRepository;
+import com.wesleysilva.bappoint.services.ServiceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

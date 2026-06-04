@@ -1,9 +1,9 @@
 package com.wesleysilva.bappoint.docs;
 
-import com.wesleysilva.bappoint.OperatingHours.dto.CreateOperatingHoursDTO;
-import com.wesleysilva.bappoint.OperatingHours.dto.OperatingHoursAllDetailsDTO;
-import com.wesleysilva.bappoint.OperatingHours.dto.OperatingHoursResponseDTO;
-import com.wesleysilva.bappoint.OperatingHours.dto.UpdateOperatingHoursDTO;
+import com.wesleysilva.bappoint.operatinghours.dto.CreateOperatingHoursDTO;
+import com.wesleysilva.bappoint.operatinghours.dto.OperatingHoursAllDetailsDTO;
+import com.wesleysilva.bappoint.operatinghours.dto.OperatingHoursResponseDTO;
+import com.wesleysilva.bappoint.operatinghours.dto.UpdateOperatingHoursDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

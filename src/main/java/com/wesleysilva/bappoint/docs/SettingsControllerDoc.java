@@ -1,7 +1,7 @@
 package com.wesleysilva.bappoint.docs;
 
-import com.wesleysilva.bappoint.Settings.dto.SettingsAllDetailsDTO;
-import com.wesleysilva.bappoint.Settings.dto.UpdateSettingsDTO;
+import com.wesleysilva.bappoint.settings.dto.SettingsAllDetailsDTO;
+import com.wesleysilva.bappoint.settings.dto.UpdateSettingsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

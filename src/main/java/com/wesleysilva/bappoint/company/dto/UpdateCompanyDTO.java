@@ -1,0 +1,49 @@
+package com.wesleysilva.bappoint.company.dto;
+
+import com.wesleysilva.bappoint.settings.dto.UpdateSettingsDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UpdateCompanyDTO {
+
+    @NotBlank
+    @Size(min = 3, max = 100)
+    private String name;
+
+    @NotBlank
+    @Email
+    private String email;
+
+    @NotEmpty
+    private String phone;
+
+    @NotEmpty
+    private String address;
+
+    @Valid
+    @NotNull
+    private String stripeAccountId;
+
+    @NotNull
+    @DecimalMin("0.0")
+    @DecimalMax("100.0")
+    private BigDecimal depositPercentage;
+
+    @Valid
+    @NotNull
+    private UpdateSettingsDTO settings;
+
+    @NotEmpty
+    private String clerkUserId;
+
+    @NotEmpty
+    private String slug;
+}

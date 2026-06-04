@@ -1,10 +1,10 @@
 package com.wesleysilva.bappoint.docs;
 
 
-import com.wesleysilva.bappoint.Services.dto.CreateServiceDTO;
-import com.wesleysilva.bappoint.Services.dto.ServiceAllDetailsDTO;
-import com.wesleysilva.bappoint.Services.dto.ServiceResponseDTO;
-import com.wesleysilva.bappoint.Services.dto.UpdateServiceDTO;
+import com.wesleysilva.bappoint.services.dto.CreateServiceDTO;
+import com.wesleysilva.bappoint.services.dto.ServiceAllDetailsDTO;
+import com.wesleysilva.bappoint.services.dto.ServiceResponseDTO;
+import com.wesleysilva.bappoint.services.dto.UpdateServiceDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

@@ -1,9 +1,9 @@
 package com.wesleysilva.bappoint.docs;
 
-import com.wesleysilva.bappoint.OffDay.dto.CreateOffDayDTO;
-import com.wesleysilva.bappoint.OffDay.dto.OffDayUpdateDTO;
-import com.wesleysilva.bappoint.OffDay.dto.OffDaysAllDetailsDTO;
-import com.wesleysilva.bappoint.OffDay.dto.OffDaysResponseDTO;
+import com.wesleysilva.bappoint.offday.dto.CreateOffDayDTO;
+import com.wesleysilva.bappoint.offday.dto.OffDayUpdateDTO;
+import com.wesleysilva.bappoint.offday.dto.OffDaysAllDetailsDTO;
+import com.wesleysilva.bappoint.offday.dto.OffDaysResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
