@@ -10,4 +10,5 @@ public interface CompanyRepository extends JpaRepository<CompanyModel, UUID> {
     boolean existsByEmail(String email);
     Optional<CompanyModel> findByClerkUserId(String clerkUserId);
     List<CompanyModel> findAllByClerkUserId(String clerkUserId);
+    Optional<CompanyModel> findBySlug(String slug);
 }
