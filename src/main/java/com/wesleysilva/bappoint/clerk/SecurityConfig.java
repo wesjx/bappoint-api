@@ -33,19 +33,18 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // public routes - they do not need token
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
+                                "/error",
+                                "/companies/slug/**",
                                 "/appointments/create",
                                 "/api/webhooks/stripe"
                         ).permitAll()
-                        // MASTER
                         .requestMatchers("/companies/create").hasRole("MASTER")
                         .requestMatchers("/companies/delete/**").hasRole("MASTER")
                         .requestMatchers("/companies/list").hasRole("MASTER")
-                        // everything else needs auth
                         .anyRequest().hasAnyRole("MASTER", "COMPANY_ADMIN")
                 )
                 .addFilterBefore(clerkJwtFilter, UsernamePasswordAuthenticationFilter.class);
