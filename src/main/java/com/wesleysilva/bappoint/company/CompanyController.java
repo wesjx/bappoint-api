@@ -1,9 +1,6 @@
 package com.wesleysilva.bappoint.company;
 
-import com.wesleysilva.bappoint.company.dto.CompanyDetailsResponseDTO;
-import com.wesleysilva.bappoint.company.dto.CompanyResponseDTO;
-import com.wesleysilva.bappoint.company.dto.CreateCompanyDTO;
-import com.wesleysilva.bappoint.company.dto.UpdateCompanyDTO;
+import com.wesleysilva.bappoint.company.dto.*;
 import com.wesleysilva.bappoint.docs.CompanyControllerDoc;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -70,6 +67,13 @@ public class CompanyController implements CompanyControllerDoc {
 //    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
     public ResponseEntity<CompanyDetailsResponseDTO> getByClerkUserId(@PathVariable String clerkUserId) {
         CompanyDetailsResponseDTO company = companyService.getCompanyByClerkUserId(clerkUserId);
+        return ResponseEntity.ok(company);
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<CompanyPublicResponseDto> getCompanyBySlug(@PathVariable String slug) {
+        CompanyPublicResponseDto company = companyService.getCompanyBySlug(slug);
         return ResponseEntity.ok(company);
     }
 }

@@ -1,9 +1,6 @@
 package com.wesleysilva.bappoint.company;
 
-import com.wesleysilva.bappoint.company.dto.CompanyDetailsResponseDTO;
-import com.wesleysilva.bappoint.company.dto.CompanyResponseDTO;
-import com.wesleysilva.bappoint.company.dto.CreateCompanyDTO;
-import com.wesleysilva.bappoint.company.dto.UpdateCompanyDTO;
+import com.wesleysilva.bappoint.company.dto.*;
 import com.wesleysilva.bappoint.settings.SettingsModel;
 import com.wesleysilva.bappoint.exceptions.CompanyDeleteException;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
@@ -111,6 +108,14 @@ public class CompanyService {
             company.getAppointments().size();
         }
         return companyMapper.toDetailsResponseDTO(company);
+    }
+
+    @Transactional(readOnly = true)
+    public CompanyPublicResponseDto getCompanyBySlug(String slug) {
+        CompanyModel company = companyRepository.findBySlug(slug)
+                .orElseThrow(CompanyNotFoundException::new);
+
+        return companyMapper.toPublicResponseDTO(company);
     }
 
 }
