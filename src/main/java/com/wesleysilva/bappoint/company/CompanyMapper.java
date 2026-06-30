@@ -1,10 +1,7 @@
 package com.wesleysilva.bappoint.company;
 
 import com.wesleysilva.bappoint.appointments.AppointmentMapper;
-import com.wesleysilva.bappoint.company.dto.CompanyDetailsResponseDTO;
-import com.wesleysilva.bappoint.company.dto.CompanyResponseDTO;
-import com.wesleysilva.bappoint.company.dto.CreateCompanyDTO;
-import com.wesleysilva.bappoint.company.dto.UpdateCompanyDTO;
+import com.wesleysilva.bappoint.company.dto.*;
 import com.wesleysilva.bappoint.settings.SettingsMapper;
 import org.springframework.stereotype.Component;
 
@@ -101,5 +98,16 @@ public class CompanyMapper {
         }
 
         return existingCompany;
+    }
+
+    public CompanyPublicResponseDto toPublicResponseDTO(CompanyModel companyModel) {
+        CompanyPublicResponseDto companyDTO = new CompanyPublicResponseDto();
+        companyDTO.setId(companyModel.getId());
+        companyDTO.setName(companyModel.getName());
+        companyDTO.setEmail(companyModel.getEmail());
+        companyDTO.setPhone(companyModel.getPhone());
+        companyDTO.setAddress(companyModel.getAddress());
+
+        return companyDTO;
     }
 }
