@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/error",
                                 "/companies/slug/**",
+                                "/companies/*/appointments/available-times",
                                 "/appointments/create",
                                 "/api/webhooks/stripe"
                         ).permitAll()
