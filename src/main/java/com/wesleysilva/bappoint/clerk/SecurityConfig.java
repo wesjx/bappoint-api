@@ -1,5 +1,7 @@
 package com.wesleysilva.bappoint.clerk;
 
+import com.wesleysilva.bappoint.ratelimit.PublicEndpointRateLimitFilter;
+import com.wesleysilva.bappoint.ratelimit.RateLimiterService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,11 +20,14 @@ public class SecurityConfig {
 
     private final ClerkJwtFilter clerkJwtFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final RateLimiterService rateLimiterService;
 
     public SecurityConfig(ClerkJwtFilter clerkJwtFilter,
-                          CorsConfigurationSource corsConfigurationSource) {
+                          CorsConfigurationSource corsConfigurationSource,
+                          RateLimiterService rateLimiterService) {
         this.clerkJwtFilter = clerkJwtFilter;
         this.corsConfigurationSource = corsConfigurationSource;
+        this.rateLimiterService = rateLimiterService;
     }
 
     @Bean
@@ -46,6 +51,10 @@ public class SecurityConfig {
                         .requestMatchers("/companies/delete/**").hasRole("MASTER")
                         .requestMatchers("/companies/list").hasRole("MASTER")
                         .anyRequest().hasAnyRole("MASTER", "COMPANY_ADMIN")
+                )
+                .addFilterBefore(
+                        new PublicEndpointRateLimitFilter(rateLimiterService),
+                        UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(clerkJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
