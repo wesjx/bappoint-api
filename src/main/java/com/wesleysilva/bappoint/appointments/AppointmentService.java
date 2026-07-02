@@ -45,73 +45,80 @@ public class AppointmentService {
         this.slotsTimesService = slotsTimesService;
     }
 
+    @Transactional
     public CreateAppointmentDTO createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
+        try {
+            LocalDate date = appointmentDTO.getStartTime().toLocalDate();
 
-        LocalDate date = appointmentDTO.getStartTime().toLocalDate();
+            List<AppointmentModel> booked = appointmentRepository
+                    .findByAppointmentDateAndCompanyId(date, companyId)
+                    .stream()
+                    .filter(a -> a.getAppointmentStatus() != AppointmentStatus.NOT_PAID
+                            && a.getAppointmentStatus() != AppointmentStatus.CANCELLED)
+                    .toList();
 
-        List<AppointmentModel> booked = appointmentRepository
-                .findByAppointmentDateAndCompanyId(date, companyId)
-                .stream()
-                .filter(a -> a.getAppointmentStatus() != AppointmentStatus.NOT_PAID
-                        && a.getAppointmentStatus() != AppointmentStatus.CANCELLED)
-                .toList();
+            SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
+            UUID settingsId = settings.getId();
 
-        SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
-        UUID settingsId = settings.getId();
+            List<ServiceModel> services = appointmentDTO.getServiceIds().stream()
+                    .map(id -> serviceRepository.findByIdAndSettingsId(id, settingsId)
+                            .orElseThrow(() -> new RuntimeException("Service not found")))
+                    .toList();
 
-        List<ServiceModel> services = appointmentDTO.getServiceIds().stream()
-                .map(id -> serviceRepository.findByIdAndSettingsId(id, settingsId)
-                        .orElseThrow(() -> new RuntimeException("Service not found")))
-                .toList();
+            int totalDuration = services.stream()
+                    .mapToInt(ServiceModel::getDurationMinutes)
+                    .sum();
 
-        int totalDuration = services.stream()
-                .mapToInt(ServiceModel::getDurationMinutes)
-                .sum();
+            LocalDateTime start = appointmentDTO.getStartTime();
+            LocalDateTime end = start.plusMinutes(totalDuration);
 
-        LocalDateTime start = appointmentDTO.getStartTime();
-        LocalDateTime end = start.plusMinutes(totalDuration);
+            boolean hasConflict = booked.stream().anyMatch(existing ->
+                    start.isBefore(existing.getEndTime()) &&
+                            end.isAfter(existing.getStartTime())
+            );
 
-        boolean hasConflict = booked.stream().anyMatch(existing ->
-                start.isBefore(existing.getEndTime()) &&
-                        end.isAfter(existing.getStartTime())
-        );
+            if (hasConflict) {
+                throw new IllegalStateException("This slot is already occupied");
+            }
 
-        if (hasConflict) {
+            boolean allowed = slotsTimesService.isRangeWithinSlots(companyId, date, start, end);
+            if (!allowed) {
+                throw new IllegalStateException("Company closed or invalid slot");
+            }
+
+            BigDecimal totalAmount = services.stream()
+                    .map(ServiceModel::getPrice)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            String slotKey = companyId + "|" + date + "|" + start;
+
+            AppointmentModel appointment = new AppointmentModel();
+            appointment.setCompany(
+                    companyRepository.findById(companyId)
+                            .orElseThrow(CompanyNotFoundException::new)
+            );
+
+            appointment.setSlotKey(slotKey);
+            appointment.setAppointmentDate(date);
+            appointment.setStartTime(start);
+            appointment.setEndTime(end);
+            appointment.setServices(services);
+            appointment.setCostumerName(appointmentDTO.getCostumerName());
+            appointment.setCostumerEmail(appointmentDTO.getCostumerEmail());
+            appointment.setCostumerPhone(appointmentDTO.getCostumerPhone());
+            appointment.setTotalAmount(totalAmount);
+            appointment.setAppointmentStatus(AppointmentStatus.PENDING);
+            appointment.setStripeSessionId(appointmentDTO.getStripeSessionId());
+            appointment.setPaymentDeadline(LocalDateTime.now().plusMinutes(10));
+            appointment.setCreatedAt(LocalDateTime.now());
+
+            AppointmentModel savedAppointment = appointmentRepository.saveAndFlush(appointment);
+            return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
+
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
             throw new IllegalStateException("This slot is already occupied");
         }
-
-        boolean allowed = slotsTimesService.isRangeWithinSlots(companyId, date, start, end);
-        if (!allowed) {
-            throw new IllegalStateException("Company closed or invalid slot");
-        }
-
-        BigDecimal totalAmount = services.stream()
-                .map(ServiceModel::getPrice)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-
-        AppointmentModel appointment = new AppointmentModel();
-        appointment.setCompany(
-                companyRepository.findById(companyId)
-                        .orElseThrow(CompanyNotFoundException::new)
-        );
-
-        appointment.setAppointmentDate(date);
-        appointment.setStartTime(start);
-        appointment.setEndTime(end);
-        appointment.setServices(services);
-        appointment.setCostumerName(appointmentDTO.getCostumerName());
-        appointment.setCostumerEmail(appointmentDTO.getCostumerEmail());
-        appointment.setCostumerPhone(appointmentDTO.getCostumerPhone());
-        appointment.setTotalAmount(totalAmount);
-        appointment.setAppointmentStatus(AppointmentStatus.PENDING);
-        appointment.setStripeSessionId(appointmentDTO.getStripeSessionId());
-        appointment.setPaymentDeadline(LocalDateTime.now().plusMinutes(10));
-        appointment.setCreatedAt(LocalDateTime.now());
-
-        AppointmentModel savedAppointment = appointmentRepository.save(appointment);
-        return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
     }
 
 

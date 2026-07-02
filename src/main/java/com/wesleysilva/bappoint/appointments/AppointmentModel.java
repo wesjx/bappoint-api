@@ -60,6 +60,9 @@ public class AppointmentModel {
     @Column(name = "payment_deadline")
     private LocalDateTime paymentDeadline;
 
+    @Column(name = "slot_key", nullable = false, unique = true, length = 200)
+    private String slotKey;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "appointment_services",
