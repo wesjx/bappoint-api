@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class InMemoryRateLimiterService implements RateLimiterService {
-    private static final int CAPACITY = 3;
+    private static final int CAPACITY = 10;
     private static final Duration REFILL_PERIOD = Duration.ofMinutes(1);
     private static final Duration EXPIRATION = Duration.ofMinutes(10);
 
