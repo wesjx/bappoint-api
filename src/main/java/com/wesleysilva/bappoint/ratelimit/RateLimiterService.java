@@ -1,4 +1,5 @@
 package com.wesleysilva.bappoint.ratelimit;
 
-public class RateLimiterService {
+public interface RateLimiterService {
+    boolean tryConsume(String key);
 }
