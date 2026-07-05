@@ -58,7 +58,7 @@ public class OperatingHoursController implements OperatingHoursControllerDoc {
             @PathVariable UUID operatingHoursId,
             @RequestBody UpdateOperatingHoursDTO operatingHoursDTO
     ){
-        UpdateOperatingHoursDTO updateOperatingHours = operatingHoursService.updateService(operatingHoursId, operatingHoursDTO);
+        UpdateOperatingHoursDTO updateOperatingHours = operatingHoursService.updateOperatingHours(operatingHoursId, operatingHoursDTO);
             return ResponseEntity.status(HttpStatus.OK).body(updateOperatingHours);
     }
 }

@@ -85,7 +85,7 @@ public class OperatingHoursService {
     }
 
     @Transactional
-    public UpdateOperatingHoursDTO updateService(UUID operatingHoursID, UpdateOperatingHoursDTO operatingHoursDTO) {
+    public UpdateOperatingHoursDTO updateOperatingHours(UUID operatingHoursID, UpdateOperatingHoursDTO operatingHoursDTO) {
         Optional<OperatingHoursModel> existingOperatingHours = Optional.of(operatingHoursRepository.findById(operatingHoursID)
                 .orElseThrow(OperatingHoursNotFoundException::new));
 
@@ -95,6 +95,8 @@ public class OperatingHoursService {
         operatingHoursToUpdate.setStartTime(operatingHoursDTO.getStartTime());
         operatingHoursToUpdate.setEndTime(operatingHoursDTO.getEndTime());
         operatingHoursToUpdate.setIsActive(operatingHoursDTO.getIsActive());
+        operatingHoursToUpdate.setLunchStartTime(operatingHoursDTO.getLunchStartTime());
+        operatingHoursToUpdate.setLunchEndTime(operatingHoursDTO.getLunchEndTime());
 
         OperatingHoursModel savedOperatingHours = operatingHoursRepository.save(operatingHoursToUpdate);
         return operatingHoursMapper.toUpdate(savedOperatingHours);
