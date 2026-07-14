@@ -169,7 +169,7 @@ class OperatingHoursControllerTest {
         UpdateOperatingHoursDTO requestDTO = new UpdateOperatingHoursDTO();
         UpdateOperatingHoursDTO responseDTO = new UpdateOperatingHoursDTO();
 
-        when(operatingHoursService.updateService(eq(operatingHoursId), any(UpdateOperatingHoursDTO.class)))
+        when(operatingHoursService.updateOperatingHours(eq(operatingHoursId), any(UpdateOperatingHoursDTO.class)))
                 .thenReturn(responseDTO);
 
         ResponseEntity<UpdateOperatingHoursDTO> response =
@@ -178,7 +178,7 @@ class OperatingHoursControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(responseDTO, response.getBody());
-        verify(operatingHoursService).updateService(operatingHoursId, requestDTO);
+        verify(operatingHoursService).updateOperatingHours(operatingHoursId, requestDTO);
     }
 
     @Test
@@ -186,12 +186,12 @@ class OperatingHoursControllerTest {
     void updateOperatingHours_shouldInvokeServiceOnce() {
         UpdateOperatingHoursDTO requestDTO = new UpdateOperatingHoursDTO();
 
-        when(operatingHoursService.updateService(any(), any(UpdateOperatingHoursDTO.class)))
+        when(operatingHoursService.updateOperatingHours(any(), any(UpdateOperatingHoursDTO.class)))
                 .thenReturn(new UpdateOperatingHoursDTO());
 
         operatingHoursController.updateOperatingHours(operatingHoursId, requestDTO);
 
-        verify(operatingHoursService, times(1)).updateService(operatingHoursId, requestDTO);
+        verify(operatingHoursService, times(1)).updateOperatingHours(operatingHoursId, requestDTO);
         verifyNoMoreInteractions(operatingHoursService);
     }
 }

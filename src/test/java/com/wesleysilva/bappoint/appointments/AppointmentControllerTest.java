@@ -8,6 +8,7 @@ import com.wesleysilva.bappoint.availability.SlotTimesDTO;
 import com.wesleysilva.bappoint.availability.SlotsTimesService;
 import com.wesleysilva.bappoint.clerk.ClerkAuthContext;
 import com.wesleysilva.bappoint.clerk.ClerkSecurityService;
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -108,42 +111,49 @@ class AppointmentControllerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("Should return appointments list when user is MASTER")
+    @DisplayName("Should return appointments list when user is master")
     void listAppointments_asMaster_shouldReturnList() {
-        List<AppointmentAllDetailsDTO> appointments = List.of(
-                new AppointmentAllDetailsDTO(),
-                new AppointmentAllDetailsDTO()
+        Page<AppointmentAllDetailsDTO> appointments = new PageImpl<>(
+                List.of(
+                        new AppointmentAllDetailsDTO(),
+                        new AppointmentAllDetailsDTO()
+                )
         );
 
         when(clerkAuthContext.isMaster()).thenReturn(true);
-        when(appointmentService.listAppointments(companyId, 0, 10))
+        when(appointmentService.listAppointments(companyId, 0, 10, "jhon", AppointmentStatus.PENDING))
                 .thenReturn(appointments);
 
-        ResponseEntity<List<AppointmentAllDetailsDTO>> response =
-                appointmentController.listAppointments(0, 10, companyId);
+        ResponseEntity<Page<AppointmentAllDetailsDTO>> response =
+                appointmentController.listAppointments(0, 10, "jhon", AppointmentStatus.PENDING, companyId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
-        verify(appointmentService).listAppointments(companyId, 0, 10);
+        assertEquals(2, response.getBody().getContent().size());
+
+        verify(appointmentService).listAppointments(companyId, 0, 10, "jhon", AppointmentStatus.PENDING);
     }
 
     @Test
     @DisplayName("Should return appointments list when user is company owner")
     void listAppointments_asCompanyOwner_shouldReturnList() {
-        List<AppointmentAllDetailsDTO> appointments = List.of(new AppointmentAllDetailsDTO());
+        Page<AppointmentAllDetailsDTO> appointments = new PageImpl<>(
+                List.of(new AppointmentAllDetailsDTO())
+        );
 
         when(clerkAuthContext.isMaster()).thenReturn(false);
         when(clerkSecurityService.isCompanyOwner(companyId)).thenReturn(true);
-        when(appointmentService.listAppointments(companyId, 0, 10))
+        when(appointmentService.listAppointments(companyId, 0, 10, "jhon", AppointmentStatus.PENDING))
                 .thenReturn(appointments);
 
-        ResponseEntity<List<AppointmentAllDetailsDTO>> response =
-                appointmentController.listAppointments(0, 10, companyId);
+        ResponseEntity<Page<AppointmentAllDetailsDTO>> response =
+                appointmentController.listAppointments(0, 10, "jhon", AppointmentStatus.PENDING, companyId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        verify(appointmentService).listAppointments(companyId, 0, 10);
+        assertEquals(1, response.getBody().getContent().size());
+
+        verify(appointmentService).listAppointments(companyId, 0, 10, "jhon", AppointmentStatus.PENDING);
     }
 
     @Test
@@ -153,11 +163,13 @@ class AppointmentControllerTest {
         when(clerkSecurityService.isCompanyOwner(companyId)).thenReturn(false);
 
         assertThrows(CompanyNotFoundException.class, () ->
-                appointmentController.listAppointments(0, 10, companyId)
+                appointmentController.listAppointments(0, 10, "jhon", AppointmentStatus.PENDING, companyId)
         );
 
-        verify(appointmentService, never()).listAppointments(any(), anyInt(), anyInt());
+        verify(appointmentService, never())
+                .listAppointments(any(), anyInt(), anyInt(), any(), any());
     }
+
 
     // -------------------------------------------------------------------------
     // GET /by-date

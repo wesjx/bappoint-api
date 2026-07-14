@@ -271,7 +271,7 @@ class OperatingHoursServiceTest {
         when(operatingHoursMapper.toUpdate(operatingHoursModel)).thenReturn(responseDTO);
 
         UpdateOperatingHoursDTO result =
-                operatingHoursService.updateService(operatingHoursId, updateDTO);
+                operatingHoursService.updateOperatingHours(operatingHoursId, updateDTO);
 
         assertNotNull(result);
 
@@ -291,7 +291,7 @@ class OperatingHoursServiceTest {
         when(operatingHoursRepository.findById(operatingHoursId)).thenReturn(Optional.empty());
 
         assertThrows(OperatingHoursNotFoundException.class, () ->
-                operatingHoursService.updateService(operatingHoursId, new UpdateOperatingHoursDTO())
+                operatingHoursService.updateOperatingHours(operatingHoursId, new UpdateOperatingHoursDTO())
         );
 
         verify(operatingHoursRepository, never()).save(any());
