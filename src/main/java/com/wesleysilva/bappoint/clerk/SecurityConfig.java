@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/error",
                                 "/companies/slug/**",
                                 "/companies/*/appointments/available-times",
+                                "/companies/*/appointments/create",
                                 "/appointments/create",
                                 "/api/webhooks/stripe"
                         ).permitAll()
