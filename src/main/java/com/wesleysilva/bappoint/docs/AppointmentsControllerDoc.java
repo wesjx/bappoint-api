@@ -5,12 +5,14 @@ import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
 import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.availability.SlotTimesDTO;
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,9 +55,11 @@ public interface AppointmentsControllerDoc {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    ResponseEntity<List<AppointmentAllDetailsDTO>> listAppointments(
+    ResponseEntity<Page<AppointmentAllDetailsDTO>> listAppointments(
             @RequestParam int page,
             @RequestParam int itemsPerPage,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) AppointmentStatus status,
             @PathVariable UUID companyId);
 
     @Operation(summary = "List appointments by date")
