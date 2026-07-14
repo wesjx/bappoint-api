@@ -3,19 +3,20 @@ package com.wesleysilva.bappoint.company;
 import com.wesleysilva.bappoint.appointments.AppointmentModel;
 import com.wesleysilva.bappoint.settings.SettingsModel;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "companies")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"settings", "appointments"})
 public class CompanyModel {
 
     @Id

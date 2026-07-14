@@ -107,6 +107,12 @@ public class CompanyMapper {
         companyDTO.setEmail(companyModel.getEmail());
         companyDTO.setPhone(companyModel.getPhone());
         companyDTO.setAddress(companyModel.getAddress());
+        companyDTO.setStripeAccountId(companyModel.getStripeAccountId());
+        companyDTO.setDepositPercentage(companyModel.getDepositPercentage());
+
+        if (companyModel.getSettings() != null) {
+            companyDTO.setSettings(settingsMapper.toResponseAllDetails(companyModel.getSettings()));
+        }
 
         return companyDTO;
     }
