@@ -15,6 +15,9 @@ import com.wesleysilva.bappoint.exceptions.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,11 +125,18 @@ public class AppointmentService {
     }
 
 
-    public List<AppointmentAllDetailsDTO> listAppointments(UUID companyId, int page, int itemsPerPage) {
-        Page<AppointmentModel> appointments = appointmentRepository.findByCompanyId(companyId, PageRequest.of(page, itemsPerPage));
-        return appointments.stream()
-                .map(appointmentMapper::toResponseAllDetailsDTO)
-                .collect(Collectors.toList());
+    public Page<AppointmentAllDetailsDTO> listAppointments(UUID companyId, int page, int itemsPerPage, String search, AppointmentStatus status) {
+        Pageable pageable = PageRequest.of(
+                Math.max(page, 0),
+                Math.max(itemsPerPage, 1),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+        Specification<AppointmentModel> specification =
+                Specification.where(AppointmentSpecifications.belongsToCompany(companyId))
+                        .and(AppointmentSpecifications.searchByCustomer(search))
+                        .and(AppointmentSpecifications.hasStatus(status));
+        return appointmentRepository.findAll(specification, pageable)
+                .map(appointmentMapper::toResponseAllDetailsDTO);
     }
 
     public AppointmentAllDetailsDTO getAppointmentById(UUID appointmentId) {

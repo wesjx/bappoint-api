@@ -9,8 +9,10 @@ import com.wesleysilva.bappoint.availability.SlotsTimesService;
 import com.wesleysilva.bappoint.clerk.ClerkAuthContext;
 import com.wesleysilva.bappoint.clerk.ClerkSecurityService;
 import com.wesleysilva.bappoint.docs.AppointmentsControllerDoc;
+import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,20 +62,22 @@ public class AppointmentController implements AppointmentsControllerDoc {
     @GetMapping("/list")
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('MASTER', 'COMPANY_ADMIN')")
-    public ResponseEntity<List<AppointmentAllDetailsDTO>> listAppointments(
+    public ResponseEntity<Page<AppointmentAllDetailsDTO>> listAppointments(
             @RequestParam int page,
             @RequestParam int itemsPerPage,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) AppointmentStatus status,
             @PathVariable UUID companyId) {
 
-        List<AppointmentAllDetailsDTO> appointments;
+        Page<AppointmentAllDetailsDTO> appointments;
 
         if (clerkAuthContext.isMaster()) {
-            appointments = appointmentService.listAppointments(companyId, page, itemsPerPage);
+            appointments = appointmentService.listAppointments(companyId, page, itemsPerPage, search, status);
         } else {
             if (!clerkSecurityService.isCompanyOwner(companyId)) {
                 throw new CompanyNotFoundException();
             }
-            appointments = appointmentService.listAppointments(companyId, page, itemsPerPage);
+            appointments = appointmentService.listAppointments(companyId, page, itemsPerPage, search, status);
         }
 
         return ResponseEntity.ok(appointments);
