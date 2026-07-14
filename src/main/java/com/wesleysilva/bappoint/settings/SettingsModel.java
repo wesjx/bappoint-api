@@ -7,19 +7,20 @@ import com.wesleysilva.bappoint.services.ServiceModel;
 import com.wesleysilva.bappoint.enums.AppointmentInterval;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "settings")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "settings")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"company", "services", "operatingHours", "offDays"})
 public class SettingsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
