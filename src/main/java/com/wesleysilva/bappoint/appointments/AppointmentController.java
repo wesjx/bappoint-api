@@ -1,9 +1,6 @@
 package com.wesleysilva.bappoint.appointments;
 
-import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
-import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
-import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
-import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
+import com.wesleysilva.bappoint.appointments.dto.*;
 import com.wesleysilva.bappoint.availability.SlotTimesDTO;
 import com.wesleysilva.bappoint.availability.SlotsTimesService;
 import com.wesleysilva.bappoint.clerk.ClerkAuthContext;
@@ -11,6 +8,7 @@ import com.wesleysilva.bappoint.clerk.ClerkSecurityService;
 import com.wesleysilva.bappoint.docs.AppointmentsControllerDoc;
 import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -85,10 +83,10 @@ public class AppointmentController implements AppointmentsControllerDoc {
 
     @GetMapping("/by-date")
     @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
-    public ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(
+    public ResponseEntity<List<AppointmentResponseDTO>> listAppointmentsByDate(
             @RequestParam LocalDate date,
             @PathVariable UUID companyId) {
-        List<AppointmentReponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
+        List<AppointmentResponseDTO> appointments = appointmentService.listAppointmentsByDate(date, companyId);
         return ResponseEntity.ok(appointments);
     }
 
@@ -105,6 +103,14 @@ public class AppointmentController implements AppointmentsControllerDoc {
             @PathVariable UUID appointmentId,
             @RequestBody UpdateAppointmentDTO appointmentDTO) {
         return ResponseEntity.ok(appointmentService.updateAppointment(appointmentId, appointmentDTO));
+    }
+
+    @PutMapping("/reschedule/{appointmentId}")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isAppointmentOwner(#appointmentId)")
+    public ResponseEntity<AppointmentResponseDTO> rescheduleAppointment(
+            @PathVariable UUID appointmentId,
+            @Valid @RequestBody RescheduleAppointmentDTO dto) {
+        return ResponseEntity.ok(appointmentService.rescheduleAppointment(appointmentId, dto));
     }
 
     @DeleteMapping("/delete/{appointmentId}")

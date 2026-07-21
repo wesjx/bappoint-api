@@ -1,9 +1,7 @@
 package com.wesleysilva.bappoint.appointments;
 
-import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
-import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
-import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
-import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
+import com.wesleysilva.bappoint.appointments.dto.*;
+import com.wesleysilva.bappoint.appointments.records.ServiceDetailsResult;
 import com.wesleysilva.bappoint.availability.SlotsTimesService;
 import com.wesleysilva.bappoint.company.CompanyRepository;
 import com.wesleysilva.bappoint.services.ServiceModel;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
@@ -48,6 +45,25 @@ public class AppointmentService {
         this.slotsTimesService = slotsTimesService;
     }
 
+    private List<ServiceModel> getServicesByIds(List<UUID> serviceIds, UUID settingsId) {
+        return serviceIds.stream()
+                .map(id -> serviceRepository.findByIdAndSettingsId(id, settingsId)
+                        .orElseThrow(() -> new RuntimeException("Service not found: " + id)))
+                .toList();
+    }
+
+    private int calculateTotalDuration(List<ServiceModel> services) {
+        return services.stream()
+                .mapToInt(ServiceModel::getDurationMinutes)
+                .sum();
+    }
+
+    private AppointmentModel findAppointmentById(UUID appointmentId) {
+        return appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+    }
+
+
     @Transactional
     public CreateAppointmentDTO createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
         try {
@@ -63,14 +79,8 @@ public class AppointmentService {
             SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
             UUID settingsId = settings.getId();
 
-            List<ServiceModel> services = appointmentDTO.getServiceIds().stream()
-                    .map(id -> serviceRepository.findByIdAndSettingsId(id, settingsId)
-                            .orElseThrow(() -> new RuntimeException("Service not found")))
-                    .toList();
-
-            int totalDuration = services.stream()
-                    .mapToInt(ServiceModel::getDurationMinutes)
-                    .sum();
+            List<ServiceModel> services = getServicesByIds(appointmentDTO.getServiceIds(), settingsId);
+            int totalDuration = calculateTotalDuration(services);
 
             LocalDateTime start = appointmentDTO.getStartTime();
             LocalDateTime end = start.plusMinutes(totalDuration);
@@ -188,7 +198,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentReponseDTO> listAppointmentsByDate(LocalDate date, UUID companyId) {
+    public List<AppointmentResponseDTO> listAppointmentsByDate(LocalDate date, UUID companyId) {
         companyRepository.findById(companyId)
                 .orElseThrow(CompanyNotFoundException::new);
 
@@ -204,6 +214,24 @@ public class AppointmentService {
             throw new AppointmentQueryException();
         }
     }
+
+    @Transactional
+    public AppointmentResponseDTO rescheduleAppointment(UUID appointmentId, RescheduleAppointmentDTO dto) {
+        AppointmentModel appointment = findAppointmentById(appointmentId);
+
+        int totalDuration = calculateTotalDuration(appointment.getServices());
+
+        LocalDateTime newStartTime = dto.getStartTime();
+        LocalDateTime newEndTime = newStartTime.plusMinutes(totalDuration);
+
+        appointment.setAppointmentDate(dto.getAppointmentDate());
+        appointment.setStartTime(newStartTime);
+        appointment.setEndTime(newEndTime);
+
+        return appointmentMapper.toResponseDTO(appointmentRepository.save(appointment));
+    }
+
+
 
 
 }

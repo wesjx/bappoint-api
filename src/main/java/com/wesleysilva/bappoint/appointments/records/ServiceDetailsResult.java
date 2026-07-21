@@ -1,4 +1,11 @@
 package com.wesleysilva.bappoint.appointments.records;
 
-public record ServiceDetailsResult() {
-}
+import com.wesleysilva.bappoint.services.ServiceModel;
+
+import java.util.List;
+
+public record ServiceDetailsResult(
+        List<ServiceModel>services,
+        int totalDuration
+) {}
+

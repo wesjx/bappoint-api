@@ -1,7 +1,7 @@
 package com.wesleysilva.bappoint.appointments;
 
 import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
-import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
+import com.wesleysilva.bappoint.appointments.dto.AppointmentResponseDTO;
 import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.availability.SlotTimesDTO;
@@ -179,12 +179,12 @@ class AppointmentControllerTest {
     @DisplayName("Should return appointments filtered by date with status 200")
     void listAppointmentsByDate_shouldReturnList() {
         LocalDate date = LocalDate.of(2026, 4, 10);
-        List<AppointmentReponseDTO> appointments = List.of(new AppointmentReponseDTO());
+        List<AppointmentResponseDTO> appointments = List.of(new AppointmentResponseDTO());
 
         when(appointmentService.listAppointmentsByDate(date, companyId))
                 .thenReturn(appointments);
 
-        ResponseEntity<List<AppointmentReponseDTO>> response =
+        ResponseEntity<List<AppointmentResponseDTO>> response =
                 appointmentController.listAppointmentsByDate(date, companyId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -201,7 +201,7 @@ class AppointmentControllerTest {
         when(appointmentService.listAppointmentsByDate(date, companyId))
                 .thenReturn(List.of());
 
-        ResponseEntity<List<AppointmentReponseDTO>> response =
+        ResponseEntity<List<AppointmentResponseDTO>> response =
                 appointmentController.listAppointmentsByDate(date, companyId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

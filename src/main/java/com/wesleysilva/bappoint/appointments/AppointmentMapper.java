@@ -1,9 +1,6 @@
 package com.wesleysilva.bappoint.appointments;
 
-import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
-import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
-import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
-import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
+import com.wesleysilva.bappoint.appointments.dto.*;
 import com.wesleysilva.bappoint.services.ServiceModel;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -82,8 +79,8 @@ public class AppointmentMapper {
         return appointmentDto;
     }
 
-    public AppointmentReponseDTO toResponseDTO(AppointmentModel appointment) {
-        AppointmentReponseDTO appointmentDto = new AppointmentReponseDTO();
+    public AppointmentResponseDTO toResponseDTO(AppointmentModel appointment) {
+        AppointmentResponseDTO appointmentDto = new AppointmentResponseDTO();
 
         appointmentDto.setCostumerName(appointment.getCostumerName());
         appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
@@ -103,5 +100,13 @@ public class AppointmentMapper {
         return appointmentDto;
     }
 
+    public RescheduleAppointmentDTO toRescheduleAppointmentDTO(AppointmentModel appointment) {
+        RescheduleAppointmentDTO appointmentDto = new RescheduleAppointmentDTO();
+
+        appointmentDto.setStartTime(appointment.getStartTime());
+        appointmentDto.setAppointmentDate(appointment.getAppointmentDate());
+
+        return appointmentDto;
+    }
 
 }

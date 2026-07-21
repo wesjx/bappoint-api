@@ -1,7 +1,7 @@
 package com.wesleysilva.bappoint.docs;
 
 import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
-import com.wesleysilva.bappoint.appointments.dto.AppointmentReponseDTO;
+import com.wesleysilva.bappoint.appointments.dto.AppointmentResponseDTO;
 import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.appointments.dto.UpdateAppointmentDTO;
 import com.wesleysilva.bappoint.availability.SlotTimesDTO;
@@ -67,7 +67,7 @@ public interface AppointmentsControllerDoc {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    ResponseEntity<List<AppointmentReponseDTO>> listAppointmentsByDate(
+    ResponseEntity<List<AppointmentResponseDTO>> listAppointmentsByDate(
             @RequestParam LocalDate date,
             @PathVariable UUID companyId);
 

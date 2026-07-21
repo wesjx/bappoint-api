@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class AppointmentReponseDTO {
+public class AppointmentResponseDTO {
     @NotBlank
     @Size(min = 2, max = 100)
     private String costumerName;
