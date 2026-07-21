@@ -119,4 +119,13 @@ public class AppointmentController implements AppointmentsControllerDoc {
         appointmentService.deleteAppointment(appointmentId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{appointmentId}/status")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isAppointmentOwner(#appointmentId)")
+    public ResponseEntity<UpdateAppointmentStatusDTO> updateAppointmentStatus(
+            @PathVariable UUID appointmentId,
+            @Valid @RequestBody UpdateAppointmentStatusDTO dto){
+        return ResponseEntity.ok(appointmentService.updateAppointmentStatus(appointmentId, dto)
+        );
+    }
 }

@@ -231,7 +231,26 @@ public class AppointmentService {
         return appointmentMapper.toResponseDTO(appointmentRepository.save(appointment));
     }
 
+    @Transactional
+    public UpdateAppointmentStatusDTO updateAppointmentStatus(UUID appointmentId, UpdateAppointmentStatusDTO dto) {
+        AppointmentModel appointment = findAppointmentById(appointmentId);
+        AppointmentStatus currentStatus = appointment.getAppointmentStatus();
+        AppointmentStatus newStatus = dto.getStatus();
 
+        if (currentStatus == AppointmentStatus.COMPLETED && newStatus == AppointmentStatus.CANCELLED) {
+            throw new IllegalStateException("Completed appointment cannot be cancelled.");
+        }
+
+        if (currentStatus == AppointmentStatus.CANCELLED && newStatus == AppointmentStatus.COMPLETED) {
+            throw new IllegalStateException("Cancelled appointment cannot be completed.");
+        }
+
+        appointment.setAppointmentStatus(newStatus);
+
+        return appointmentMapper.toUpdateAppointmentStatusDTO(
+                appointmentRepository.save(appointment)
+        );
+    }
 
 
 }

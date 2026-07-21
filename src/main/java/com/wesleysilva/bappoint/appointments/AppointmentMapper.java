@@ -109,4 +109,12 @@ public class AppointmentMapper {
         return appointmentDto;
     }
 
+    public UpdateAppointmentStatusDTO toUpdateAppointmentStatusDTO(AppointmentModel appointment) {
+        UpdateAppointmentStatusDTO appointmentDto = new UpdateAppointmentStatusDTO();
+
+        appointmentDto.setStatus(appointment.getAppointmentStatus());
+
+        return appointmentDto;
+    }
+
 }
