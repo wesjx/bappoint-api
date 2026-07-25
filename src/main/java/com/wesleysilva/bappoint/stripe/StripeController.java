@@ -4,6 +4,7 @@ import com.wesleysilva.bappoint.stripe.dto.PaymentRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.wesleysilva.bappoint.stripe.CheckoutSessionAppointmentResponse;
 
 import java.util.Map;
 import java.util.UUID;
@@ -42,4 +43,16 @@ public class StripeController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/checkout-session/{sessionId}")
+    public ResponseEntity<CheckoutSessionAppointmentResponse> getCheckoutSessionAppointment(
+            @PathVariable UUID companyId,
+            @PathVariable String sessionId
+    ) {
+        CheckoutSessionAppointmentResponse response =
+                stripeService.getAppointmentBySessionId(companyId, sessionId);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

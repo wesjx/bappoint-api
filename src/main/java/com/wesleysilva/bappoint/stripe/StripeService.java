@@ -18,6 +18,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.wesleysilva.bappoint.stripe.CheckoutSessionAppointmentResponse;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,7 +38,7 @@ public class StripeService {
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
-    @Value("${app.frontend.url:http://localhost:3000}")
+    @Value("${app.frontend.url:http://localhost:3001}")
     private String frontendUrl;
 
     public StripeService(AppointmentRepository appointmentRepository,
@@ -122,12 +123,15 @@ public class StripeService {
                                 )
                                 .build()
                 )
-                .setSuccessUrl(frontendUrl + "/success?session_id={CHECKOUT_SESSION_ID}")
+                .setSuccessUrl(
+                        frontendUrl + "/success?session_id={CHECKOUT_SESSION_ID}&company_id=" + company.getId()
+                )
                 .setCancelUrl(frontendUrl + "/cancel")
                 .putAllMetadata(Map.of(
                         "appointment_id", appointmentId.toString(),
                         "company_id", company.getId().toString()
                 ))
+
                 // STRIPE CONNECT
                 .setPaymentIntentData(
                         SessionCreateParams.PaymentIntentData.builder()
@@ -188,4 +192,37 @@ public class StripeService {
             log.error("Error:", e);
         }
     }
+
+    public CheckoutSessionAppointmentResponse getAppointmentBySessionId(UUID companyId, String sessionId) {
+        if (companyId == null) {
+            throw new InvalidParameterException("companyId cannot be null");
+        }
+
+        if (sessionId == null || sessionId.isBlank()) {
+            throw new InvalidParameterException("sessionId cannot be null or blank");
+        }
+
+        AppointmentModel appointment = appointmentRepository.findByStripeSessionId(sessionId)
+                .orElseThrow(AppointmentNotFoundException::new);
+
+        if (!appointment.getCompany().getId().equals(companyId)) {
+            throw new IllegalStateException("Appointment does not belong to this company");
+        }
+
+        List<String> services = appointment.getServices().stream()
+                .map(ServiceModel::getName)
+                .toList();
+
+        return new CheckoutSessionAppointmentResponse(
+                appointment.getId(),
+                appointment.getAppointmentStatus(),
+                appointment.getAppointmentDate(),
+                appointment.getStartTime(),
+                appointment.getCostumerName(),
+                services,
+                appointment.getCompany().getName()
+        );
+    }
+
+
 }
