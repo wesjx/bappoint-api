@@ -93,12 +93,12 @@ class AppointmentControllerTest {
     @DisplayName("Should create appointment and return 201")
     void createAppointment_shouldReturn201WithBody() {
         CreateAppointmentDTO requestDTO = new CreateAppointmentDTO();
-        CreateAppointmentDTO responseDTO = new CreateAppointmentDTO();
+        AppointmentAllDetailsDTO responseDTO = new AppointmentAllDetailsDTO();
 
         when(appointmentService.createAppointment(any(CreateAppointmentDTO.class), eq(companyId)))
                 .thenReturn(responseDTO);
 
-        ResponseEntity<CreateAppointmentDTO> response =
+        ResponseEntity<AppointmentAllDetailsDTO> response =
                 appointmentController.createAppointment(companyId, requestDTO);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

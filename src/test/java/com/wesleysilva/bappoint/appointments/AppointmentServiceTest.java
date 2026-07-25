@@ -1,5 +1,6 @@
 package com.wesleysilva.bappoint.appointments;
 
+import com.wesleysilva.bappoint.appointments.dto.AppointmentAllDetailsDTO;
 import com.wesleysilva.bappoint.appointments.dto.CreateAppointmentDTO;
 import com.wesleysilva.bappoint.availability.SlotsTimesService;
 import com.wesleysilva.bappoint.company.CompanyModel;
@@ -60,7 +61,6 @@ class AppointmentServiceTest {
         dto.setCostumerName("Wesley");
         dto.setCostumerEmail("wesley@email.com");
         dto.setCostumerPhone("999999999");
-        dto.setStripeSessionId("stripe_session_123");
 
         serviceModel = new ServiceModel();
         serviceModel.setId(serviceId);
@@ -103,7 +103,7 @@ class AppointmentServiceTest {
         when(appointmentMapper.toCreateAppointmentDTO(saved))
                 .thenReturn(response);
 
-        CreateAppointmentDTO result = appointmentService.createAppointment(dto, companyId);
+        AppointmentAllDetailsDTO result = appointmentService.createAppointment(dto, companyId);
 
         assertNotNull(result);
         verify(appointmentRepository).save(any(AppointmentModel.class));
