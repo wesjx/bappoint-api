@@ -38,14 +38,7 @@ public class AppointmentMapper {
         appointmentDto.setCostumerName(appointment.getCostumerName());
         appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
         appointmentDto.setCostumerPhone(appointment.getCostumerPhone());
-        appointmentDto.setAppointmentDate(appointment.getAppointmentDate());
         appointmentDto.setStartTime(appointment.getStartTime());
-        appointmentDto.setEndTime(appointment.getEndTime());
-        appointmentDto.setTotalAmount(appointment.getTotalAmount());
-        appointmentDto.setAppointmentStatus(appointment.getAppointmentStatus());
-        appointmentDto.setStripeSessionId(appointment.getStripeSessionId());
-        appointmentDto.setCreatedAt(appointment.getCreatedAt());
-        appointmentDto.setPaymentDeadline(appointment.getPaymentDeadline());
 
         appointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
                 .map(services -> services.stream()
@@ -53,7 +46,6 @@ public class AppointmentMapper {
                         .toList())
                 .orElse(List.of()));
 
-        appointmentDto.setCompanyId(appointment.getCompany().getId());
         return appointmentDto;
     }
 
@@ -113,6 +105,23 @@ public class AppointmentMapper {
         UpdateAppointmentStatusDTO appointmentDto = new UpdateAppointmentStatusDTO();
 
         appointmentDto.setStatus(appointment.getAppointmentStatus());
+
+        return appointmentDto;
+    }
+
+    public CreateAppointmentManualDTO toCreateAppointmentManualDTO(AppointmentModel appointment) {
+        CreateAppointmentManualDTO appointmentDto = new CreateAppointmentManualDTO();
+
+        appointmentDto.setCostumerName(appointment.getCostumerName());
+        appointmentDto.setCostumerEmail(appointment.getCostumerEmail());
+        appointmentDto.setCostumerPhone(appointment.getCostumerPhone());
+        appointmentDto.setStartTime(appointment.getStartTime());
+
+        appointmentDto.setServiceIds(Optional.ofNullable(appointment.getServices())
+                .map(services -> services.stream()
+                        .map(ServiceModel::getId)
+                        .toList())
+                .orElse(List.of()));
 
         return appointmentDto;
     }
