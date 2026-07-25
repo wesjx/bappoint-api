@@ -46,7 +46,7 @@ public interface AppointmentsControllerDoc {
             @ApiResponse(responseCode = "409", description = "Time slot conflict"),
             @ApiResponse(responseCode = "500", description = "Server error")
     })
-    ResponseEntity<CreateAppointmentDTO> createAppointment(
+    ResponseEntity<AppointmentAllDetailsDTO> createAppointment(
             @PathVariable UUID companyId,
             @RequestBody CreateAppointmentDTO appointmentDTO);
 
