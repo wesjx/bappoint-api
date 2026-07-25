@@ -12,12 +12,6 @@ import java.util.UUID;
 
 @Data
 public class CreateAppointmentDTO {
-    @NotNull
-    private LocalDateTime createdAt;
-
-    @NotNull
-    private LocalDateTime paymentDeadline;
-
     @NotBlank
     @Size(min = 2, max = 100)
     private String costumerName;
@@ -30,31 +24,9 @@ public class CreateAppointmentDTO {
     private String costumerPhone;
 
     @NotNull
-    @FutureOrPresent
-    private LocalDate appointmentDate;
-
-    @NotNull
     @Future
     private LocalDateTime startTime;
 
-    @NotNull
-    @Future
-    private LocalDateTime endTime;
-
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = false)
-    @DecimalMax(value = "99999.99")
-    private BigDecimal totalAmount;
-
-    @NotNull
-    private AppointmentStatus appointmentStatus;
-
-    @NotNull
-    private String stripeSessionId;
-
     @NotEmpty
     private List<UUID> serviceIds;
-
-    @NotNull
-    private UUID companyId;
 }
