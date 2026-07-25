@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -22,4 +23,6 @@ public interface AppointmentRepository extends JpaRepository<AppointmentModel, U
             AppointmentStatus status,
             LocalDateTime time
     );
+
+    Optional<AppointmentModel> findByStripeSessionId(String stripeSessionId);
 }
