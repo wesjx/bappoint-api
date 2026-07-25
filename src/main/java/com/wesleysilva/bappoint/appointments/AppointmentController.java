@@ -50,10 +50,10 @@ public class AppointmentController implements AppointmentsControllerDoc {
 
 
     @PostMapping("/create")
-    public ResponseEntity<CreateAppointmentDTO> createAppointment(
+    public ResponseEntity<AppointmentAllDetailsDTO> createAppointment(
             @PathVariable UUID companyId,
             @RequestBody CreateAppointmentDTO appointmentDTO) {
-        CreateAppointmentDTO appointment = appointmentService.createAppointment(appointmentDTO, companyId);
+        AppointmentAllDetailsDTO appointment = appointmentService.createAppointment(appointmentDTO, companyId);
         return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
     }
 
@@ -128,4 +128,15 @@ public class AppointmentController implements AppointmentsControllerDoc {
         return ResponseEntity.ok(appointmentService.updateAppointmentStatus(appointmentId, dto)
         );
     }
+
+    @PostMapping("/manual-create")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
+    public ResponseEntity<CreateAppointmentManualDTO> createManualAppointment(
+            @PathVariable UUID companyId,
+            @Valid @RequestBody CreateAppointmentManualDTO request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(appointmentService.createManualAppointment(request, companyId));
+    }
+
 }

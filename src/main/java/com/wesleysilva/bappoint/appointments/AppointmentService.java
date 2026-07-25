@@ -65,7 +65,7 @@ public class AppointmentService {
 
 
     @Transactional
-    public CreateAppointmentDTO createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
+    public AppointmentAllDetailsDTO createAppointment(CreateAppointmentDTO appointmentDTO, UUID companyId) {
         try {
             LocalDate date = appointmentDTO.getStartTime().toLocalDate();
 
@@ -122,12 +122,11 @@ public class AppointmentService {
             appointment.setCostumerPhone(appointmentDTO.getCostumerPhone());
             appointment.setTotalAmount(totalAmount);
             appointment.setAppointmentStatus(AppointmentStatus.PENDING);
-            appointment.setStripeSessionId(appointmentDTO.getStripeSessionId());
             appointment.setPaymentDeadline(LocalDateTime.now().plusMinutes(10));
             appointment.setCreatedAt(LocalDateTime.now());
 
             AppointmentModel savedAppointment = appointmentRepository.saveAndFlush(appointment);
-            return appointmentMapper.toCreateAppointmentDTO(savedAppointment);
+            return appointmentMapper.toResponseAllDetailsDTO(savedAppointment);
 
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             throw new IllegalStateException("This slot is already occupied");
@@ -250,6 +249,75 @@ public class AppointmentService {
         return appointmentMapper.toUpdateAppointmentStatusDTO(
                 appointmentRepository.save(appointment)
         );
+    }
+
+    @Transactional
+    public CreateAppointmentManualDTO createManualAppointment(CreateAppointmentManualDTO request, UUID companyId) {
+        try {
+            LocalDate date = request.getStartTime().toLocalDate();
+
+            List<AppointmentModel> booked = appointmentRepository
+                    .findByAppointmentDateAndCompanyId(date, companyId)
+                    .stream()
+                    .filter(a -> a.getAppointmentStatus() != AppointmentStatus.NOT_PAID
+                            && a.getAppointmentStatus() != AppointmentStatus.CANCELLED)
+                    .toList();
+
+            SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
+            UUID settingsId = settings.getId();
+
+            List<ServiceModel> services = getServicesByIds(request.getServiceIds(), settingsId);
+            int totalDuration = calculateTotalDuration(services);
+
+            LocalDateTime start = request.getStartTime();
+            LocalDateTime end = start.plusMinutes(totalDuration);
+
+            boolean hasConflict = booked.stream().anyMatch(existing ->
+                    start.isBefore(existing.getEndTime()) &&
+                            end.isAfter(existing.getStartTime())
+            );
+
+            if (hasConflict) {
+                throw new IllegalStateException("This slot is already occupied");
+            }
+
+            boolean allowed = slotsTimesService.isRangeWithinSlots(companyId, date, start, end);
+            if (!allowed) {
+                throw new IllegalStateException("Company closed or invalid slot");
+            }
+
+            BigDecimal totalAmount = services.stream()
+                    .map(ServiceModel::getPrice)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            String slotKey = companyId + "|" + date + "|" + start;
+
+            AppointmentModel appointment = new AppointmentModel();
+            appointment.setCompany(
+                    companyRepository.findById(companyId)
+                            .orElseThrow(CompanyNotFoundException::new)
+            );
+            appointment.setSlotKey(slotKey);
+            appointment.setAppointmentDate(date);
+            appointment.setStartTime(start);
+            appointment.setEndTime(end);
+            appointment.setServices(services);
+            appointment.setCostumerName(request.getCostumerName());
+            appointment.setCostumerEmail(request.getCostumerEmail());
+            appointment.setCostumerPhone(request.getCostumerPhone());
+            appointment.setTotalAmount(totalAmount);
+            appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
+            appointment.setStripeSessionId(null);
+            appointment.setPaymentDeadline(null);
+            appointment.setCreatedAt(LocalDateTime.now());
+
+            AppointmentModel savedAppointment = appointmentRepository.saveAndFlush(appointment);
+            return appointmentMapper.toCreateAppointmentManualDTO(savedAppointment);
+
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new IllegalStateException("This slot is already occupied");
+        }
     }
 
 
