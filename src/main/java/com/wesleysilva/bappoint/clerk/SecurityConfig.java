@@ -47,7 +47,11 @@ public class SecurityConfig {
                                 "/companies/*/appointments/available-times",
                                 "/companies/*/appointments/create",
                                 "/appointments/create",
-                                "/api/webhooks/stripe"
+                                "/api/webhooks/stripe",
+                                "/stripe/checkout-session",
+                                "/companies/*/stripe/checkout-session",
+                                "/stripe/webhook",
+                                "/companies/*/stripe/checkout-session/*"
                         ).permitAll()
                         .requestMatchers("/companies/create").hasRole("MASTER")
                         .requestMatchers("/companies/delete/**").hasRole("MASTER")
