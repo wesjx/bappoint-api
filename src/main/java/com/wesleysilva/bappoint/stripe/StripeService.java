@@ -38,7 +38,7 @@ public class StripeService {
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
-    @Value("${app.frontend.url:http://localhost:3001}")
+    @Value("${app.frontend.root-domain}")
     private String frontendUrl;
 
     public StripeService(AppointmentRepository appointmentRepository,
@@ -65,6 +65,8 @@ public class StripeService {
         }
 
         CompanyModel company = appointment.getCompany();
+
+        String companyFrontendUrl = "https://" + company.getSlug() + "." + frontendUrl;
 
         if (company.getStripeAccountId() == null) {
             throw new IllegalStateException("Company without Stripe Connect ID");
@@ -124,9 +126,9 @@ public class StripeService {
                                 .build()
                 )
                 .setSuccessUrl(
-                        frontendUrl + "/success?session_id={CHECKOUT_SESSION_ID}&company_id=" + company.getId()
+                        companyFrontendUrl + "/success?session_id={CHECKOUT_SESSION_ID}&company_id=" + company.getId()
                 )
-                .setCancelUrl(frontendUrl + "/cancel")
+                .setCancelUrl(companyFrontendUrl + "/cancel")
                 .putAllMetadata(Map.of(
                         "appointment_id", appointmentId.toString(),
                         "company_id", company.getId().toString()

@@ -11,7 +11,12 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "operating_hours")
+@Table(
+        name = "operating_hours",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uq_operating_hours_settings_weekday", columnNames = {"settings_id", "weekday"})
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,7 +46,7 @@ public class OperatingHoursModel {
     private SettingsModel settings;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "weekday", nullable = false, unique = true)
+    @Column(name = "weekday", nullable = false)
     private WeekDay weekday;
 
 }
