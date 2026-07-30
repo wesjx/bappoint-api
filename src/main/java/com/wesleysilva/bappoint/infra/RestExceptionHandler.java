@@ -88,6 +88,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
 
+    @ExceptionHandler(AppointmentMustBeInTheFutureException.class)
+    private ResponseEntity<RestErrorMessage> appointmentMustBeInTheFuture(AppointmentMustBeInTheFutureException exception) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, "Appointment start time must be in the future.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
     private ResponseEntity<RestErrorMessage> validationException(MethodArgumentNotValidException exception) {
         String errors = exception.getBindingResult()
                 .getFieldErrors()

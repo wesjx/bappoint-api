@@ -21,7 +21,7 @@ public class CreateAppointmentManualDTO {
     private String costumerPhone;
 
     @NotNull
-    @Future
+    @Future(message = "Appointment start time must be in the future")
     private LocalDateTime startTime;
 
     @NotEmpty
