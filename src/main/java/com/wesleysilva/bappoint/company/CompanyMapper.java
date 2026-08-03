@@ -24,7 +24,6 @@ public class CompanyMapper {
         companyDto.setEmail(companyModel.getEmail());
         companyDto.setPhone(companyModel.getPhone());
         companyDto.setAddress(companyModel.getAddress());
-        companyDto.setStripeAccountId(companyModel.getStripeAccountId());
         companyDto.setClerkUserId(companyModel.getClerkUserId());
         companyDto.setSlug(companyModel.getSlug());
         companyDto.setDepositPercentage(companyModel.getDepositPercentage());
@@ -59,6 +58,9 @@ public class CompanyMapper {
         companyDTO.setPhone(companyModel.getPhone());
         companyDTO.setAddress(companyModel.getAddress());
         companyDTO.setStripeAccountId(companyModel.getStripeAccountId());
+        companyDTO.setPaymentSetupStatus(companyModel.getPaymentSetupStatus());
+        companyDTO.setStripeConnectionError(companyModel.getStripeConnectionError());
+        companyDTO.setStripeConnectedAt(companyModel.getStripeConnectedAt().toString());
         companyDTO.setClerkUserId(companyModel.getClerkUserId());
         companyDTO.setSlug(companyModel.getSlug());
         companyDTO.setDepositPercentage(companyModel.getDepositPercentage());
@@ -83,7 +85,6 @@ public class CompanyMapper {
         if (updateCompanyDTO.getEmail() != null) existingCompany.setEmail(updateCompanyDTO.getEmail());
         if (updateCompanyDTO.getPhone() != null) existingCompany.setPhone(updateCompanyDTO.getPhone());
         if (updateCompanyDTO.getAddress() != null) existingCompany.setAddress(updateCompanyDTO.getAddress());
-        if (updateCompanyDTO.getStripeAccountId() != null) existingCompany.setStripeAccountId(updateCompanyDTO.getStripeAccountId());
         if (updateCompanyDTO.getClerkUserId() != null) existingCompany.setClerkUserId(updateCompanyDTO.getClerkUserId());
         if (updateCompanyDTO.getSlug() != null) existingCompany.setSlug(updateCompanyDTO.getSlug());
         if (updateCompanyDTO.getDepositPercentage() != null) {

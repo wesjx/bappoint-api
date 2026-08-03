@@ -28,9 +28,6 @@ public class UpdateCompanyDTO {
     @NotEmpty
     private String address;
 
-    @Valid
-    @NotNull
-    private String stripeAccountId;
 
     @NotNull
     @DecimalMin("0.0")

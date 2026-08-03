@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.company;
 
 import com.wesleysilva.bappoint.company.dto.*;
+import com.wesleysilva.bappoint.enums.PaymentSetupStatus;
 import com.wesleysilva.bappoint.settings.SettingsModel;
 import com.wesleysilva.bappoint.exceptions.CompanyDeleteException;
 import com.wesleysilva.bappoint.exceptions.CompanyNotFoundException;
@@ -33,10 +34,9 @@ public class CompanyService {
         company.setEmail(companyDTO.getEmail());
         company.setPhone(companyDTO.getPhone());
         company.setAddress(companyDTO.getAddress());
-        company.setStripeAccountId(companyDTO.getStripeAccountId());
+        company.setPaymentSetupStatus(PaymentSetupStatus.NOT_CONNECTED);
         company.setClerkUserId(companyDTO.getClerkUserId());
         company.setSlug(companyDTO.getSlug());
-        company.setClerkUserId(companyDTO.getClerkUserId());
         company.setDepositPercentage(companyDTO.getDepositPercentage());
 
         if (companyDTO.getSettings() != null) {
