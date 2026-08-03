@@ -3,6 +3,7 @@ package com.wesleysilva.bappoint.stripe;
 import com.wesleysilva.bappoint.stripe.dto.PaymentRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.wesleysilva.bappoint.stripe.CheckoutSessionAppointmentResponse;
 
@@ -54,5 +55,19 @@ public class StripeController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/connect-link")
+    @PreAuthorize("hasRole('MASTER') or @clerkSecurityService.isCompanyOwner(#companyId)")
+    public ResponseEntity<?> createConnectLink(@PathVariable UUID companyId) {
+        try {
+            String url = stripeService.createOrReuseExpressConnectLink(companyId);
+            return ResponseEntity.ok(Map.of("url", url));
+        } catch (Exception e) {
+            log.error("Error to create Stripe connect link.", e);
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
 
 }
