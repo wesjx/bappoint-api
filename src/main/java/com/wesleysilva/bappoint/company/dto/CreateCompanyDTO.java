@@ -30,8 +30,6 @@ public class CreateCompanyDTO {
     @NotNull
     private CreateSettingsDTO settings;
 
-    @NotNull
-    private String stripeAccountId;
 
     @NotNull
     @DecimalMin("0.0")

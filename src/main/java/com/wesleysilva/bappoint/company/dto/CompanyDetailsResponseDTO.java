@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.company.dto;
 
 import com.wesleysilva.bappoint.appointments.dto.AppointmentResponseDTO;
+import com.wesleysilva.bappoint.enums.PaymentSetupStatus;
 import com.wesleysilva.bappoint.settings.dto.SettingsAllDetailsDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -36,6 +37,12 @@ public class CompanyDetailsResponseDTO {
     @Valid
     @NotNull
     private String stripeAccountId;
+
+    private PaymentSetupStatus paymentSetupStatus;
+
+    private String stripeConnectedAt;
+
+    private String stripeConnectionError;
 
     @NotNull
     @DecimalMin("0.0")

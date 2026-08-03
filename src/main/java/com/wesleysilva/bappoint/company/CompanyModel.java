@@ -1,11 +1,13 @@
 package com.wesleysilva.bappoint.company;
 
 import com.wesleysilva.bappoint.appointments.AppointmentModel;
+import com.wesleysilva.bappoint.enums.PaymentSetupStatus;
 import com.wesleysilva.bappoint.settings.SettingsModel;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +31,16 @@ public class CompanyModel {
 
     @Column(name = "stripe_account_id")
     private String stripeAccountId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_setup_status")
+    private PaymentSetupStatus paymentSetupStatus;
+
+    @Column(name = "stripe_connected_at")
+    private Instant stripeConnectedAt;
+
+    @Column(name = "stripe_connection_error")
+    private String stripeConnectionError;
 
     @Column(name = "clerk_user_id")
     private String clerkUserId;

@@ -2,15 +2,16 @@ package com.wesleysilva.bappoint.stripe;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Event;
-import com.stripe.model.EventDataObjectDeserializer;
-import com.stripe.model.StripeObject;
+import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
+import com.stripe.param.AccountCreateParams;
+import com.stripe.param.AccountLinkCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.wesleysilva.bappoint.appointments.AppointmentModel;
 import com.wesleysilva.bappoint.appointments.AppointmentRepository;
 import com.wesleysilva.bappoint.company.CompanyModel;
 import com.wesleysilva.bappoint.company.CompanyRepository;
+import com.wesleysilva.bappoint.enums.PaymentSetupStatus;
 import com.wesleysilva.bappoint.services.ServiceModel;
 import com.wesleysilva.bappoint.enums.AppointmentStatus;
 import com.wesleysilva.bappoint.exceptions.AppointmentNotFoundException;
@@ -224,6 +225,101 @@ public class StripeService {
                 services,
                 appointment.getCompany().getName()
         );
+    }
+
+    @Value("${stripe.connect.refresh-url}")
+    private String stripeConnectRefreshUrl;
+
+    @Value("${stripe.connect.return-url}")
+    private String stripeConnectReturnUrl;
+
+    public String createOrReuseExpressConnectLink(UUID companyId) throws StripeException {
+        if (companyId == null) {
+            throw new InvalidParameterException("companyId cannot be null");
+        }
+
+        CompanyModel company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new IllegalStateException("Company not found"));
+
+        if (company.getStripeAccountId() == null || company.getStripeAccountId().isBlank()) {
+            AccountCreateParams accountParams = AccountCreateParams.builder()
+                    .setType(AccountCreateParams.Type.EXPRESS)
+                    .setCountry("IE")
+                    .setEmail(company.getEmail())
+                    .setBusinessType(AccountCreateParams.BusinessType.COMPANY)
+                    .putMetadata("companyId", company.getId().toString())
+                    .putMetadata("companySlug", company.getSlug())
+                    .build();
+
+            Account account = Account.create(accountParams);
+            company.setStripeAccountId(account.getId());
+        }
+
+        company.setPaymentSetupStatus(PaymentSetupStatus.PENDING);
+        company.setStripeConnectionError(null);
+        companyRepository.save(company);
+
+        AccountLinkCreateParams linkParams = AccountLinkCreateParams.builder()
+                .setAccount(company.getStripeAccountId())
+                .setRefreshUrl(stripeConnectRefreshUrl)
+                .setReturnUrl(stripeConnectReturnUrl)
+                .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
+                .build();
+
+        AccountLink accountLink = AccountLink.create(linkParams);
+        return accountLink.getUrl();
+    }
+
+    public void handleAccountUpdated(Event event) {
+        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+        StripeObject stripeObject = dataObjectDeserializer.getObject().orElse(null);
+
+        if (!(stripeObject instanceof Account account)) {
+            log.warn("Stripe account.updated event without Account object. Event id={}", event.getId());
+            return;
+        }
+
+        CompanyModel company = companyRepository.findByStripeAccountId(account.getId())
+                .orElse(null);
+
+        if (company == null) {
+            log.warn("No company found for stripe account id={}", account.getId());
+            return;
+        }
+
+        boolean chargesEnabled = Boolean.TRUE.equals(account.getChargesEnabled());
+        boolean payoutsEnabled = Boolean.TRUE.equals(account.getPayoutsEnabled());
+
+        if (chargesEnabled && payoutsEnabled) {
+            company.setPaymentSetupStatus(PaymentSetupStatus.CONNECTED);
+
+            if (company.getStripeConnectedAt() == null) {
+                company.setStripeConnectedAt(java.time.Instant.now());
+            }
+
+            company.setStripeConnectionError(null);
+        } else {
+            company.setPaymentSetupStatus(PaymentSetupStatus.PENDING);
+
+            if (account.getRequirements() != null
+                    && account.getRequirements().getCurrentlyDue() != null
+                    && !account.getRequirements().getCurrentlyDue().isEmpty()) {
+
+                company.setStripeConnectionError(
+                        "Stripe onboarding incomplete. Missing: "
+                                + String.join(", ", account.getRequirements().getCurrentlyDue())
+                );
+            } else {
+                company.setStripeConnectionError("Stripe onboarding still pending.");
+            }
+        }
+
+        companyRepository.save(company);
+
+        log.info("Stripe account sync updated for companyId={}, stripeAccountId={}, status={}",
+                company.getId(),
+                company.getStripeAccountId(),
+                company.getPaymentSetupStatus());
     }
 
 

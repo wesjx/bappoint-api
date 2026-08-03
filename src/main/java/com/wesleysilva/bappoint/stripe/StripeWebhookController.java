@@ -36,13 +36,22 @@ public class StripeWebhookController {
                     endpointSecret
             );
         } catch (Exception e) {
+            log.error("Invalid Stripe signature", e);
             return ResponseEntity.badRequest().body("Invalid signature");
         }
 
-        if ("checkout.session.completed".equals(event.getType())) {
-            stripeService.handleCheckoutCompleted(event);
+        try {
+            if ("checkout.session.completed".equals(event.getType())) {
+                stripeService.handleCheckoutCompleted(event);
+            } else if ("account.updated".equals(event.getType())) {
+                stripeService.handleAccountUpdated(event);
+            }
+        } catch (Exception e) {
+            log.error("Error processing Stripe webhook event: {}", event.getType(), e);
+            return ResponseEntity.internalServerError().body("Webhook processing error");
         }
 
         return ResponseEntity.ok("success");
     }
+
 }
