@@ -34,8 +34,6 @@ public class CompanyDetailsResponseDTO {
     @NotEmpty
     private String address;
 
-    @Valid
-    @NotNull
     private String stripeAccountId;
 
     private PaymentSetupStatus paymentSetupStatus;
