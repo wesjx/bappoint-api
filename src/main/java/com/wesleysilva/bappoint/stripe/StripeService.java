@@ -42,6 +42,10 @@ public class StripeService {
     @Value("${app.frontend.root-domain}")
     private String frontendUrl;
 
+    @Value("${app.master.frontend-url}")
+    private String masterFrontendUrl;
+
+
     public StripeService(AppointmentRepository appointmentRepository,
                          CompanyRepository companyRepository) {
         this.appointmentRepository = appointmentRepository;
@@ -227,12 +231,6 @@ public class StripeService {
         );
     }
 
-    @Value("${stripe.connect.refresh-url}")
-    private String stripeConnectRefreshUrl;
-
-    @Value("${stripe.connect.return-url}")
-    private String stripeConnectReturnUrl;
-
     public String createOrReuseExpressConnectLink(UUID companyId) throws StripeException {
         if (companyId == null) {
             throw new InvalidParameterException("companyId cannot be null");
@@ -259,10 +257,13 @@ public class StripeService {
         company.setStripeConnectionError(null);
         companyRepository.save(company);
 
+        String refreshUrl = masterFrontendUrl + "/companies/" + company.getId();
+        String returnUrl = masterFrontendUrl + "/companies/" + company.getId() + "/stripe/pending";
+
         AccountLinkCreateParams linkParams = AccountLinkCreateParams.builder()
                 .setAccount(company.getStripeAccountId())
-                .setRefreshUrl(stripeConnectRefreshUrl)
-                .setReturnUrl(stripeConnectReturnUrl)
+                .setRefreshUrl(refreshUrl)
+                .setReturnUrl(returnUrl)
                 .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                 .build();
 
