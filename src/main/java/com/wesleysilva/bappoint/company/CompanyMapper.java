@@ -60,7 +60,11 @@ public class CompanyMapper {
         companyDTO.setStripeAccountId(companyModel.getStripeAccountId());
         companyDTO.setPaymentSetupStatus(companyModel.getPaymentSetupStatus());
         companyDTO.setStripeConnectionError(companyModel.getStripeConnectionError());
-        companyDTO.setStripeConnectedAt(companyModel.getStripeConnectedAt().toString());
+        companyDTO.setStripeConnectedAt(
+                companyModel.getStripeConnectedAt() != null
+                        ? companyModel.getStripeConnectedAt().toString()
+                        : null
+        );
         companyDTO.setClerkUserId(companyModel.getClerkUserId());
         companyDTO.setSlug(companyModel.getSlug());
         companyDTO.setDepositPercentage(companyModel.getDepositPercentage());
