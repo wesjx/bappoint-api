@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OffDaysRepository extends JpaRepository<OffDaysModel, UUID> {
-    List<OffDaysModel> findByDate(LocalDate date);
+    List<OffDaysModel> findBySettingsCompanyIdAndDate(UUID companyId, LocalDate date);
     List<OffDaysModel> findBySettingsCompanyId(UUID companyId);
 }
