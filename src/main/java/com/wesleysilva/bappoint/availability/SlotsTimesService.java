@@ -43,8 +43,8 @@ public class SlotsTimesService {
         WeekDay weekday = WeekDay.valueOf(dayOfWeek.name());
 
         //check if there is off day in the date
-        List<OffDaysModel> offDays = offDaysRepository.findByDate(date);
-        if(!offDays.isEmpty()) {
+        List<OffDaysModel> offDays = offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date);
+        if (!offDays.isEmpty()) {
             return List.of();
         }
 
@@ -52,8 +52,15 @@ public class SlotsTimesService {
         AppointmentInterval appointmentInterval = settings.getAppointmentInterval();
 
         //check if hours of the day is empty means day off
-        List<OperatingHoursModel> hours = operatingHoursRepository.findByWeekday(weekday);
-        if (hours.isEmpty()) {
+        OperatingHoursModel operatingHours = operatingHoursRepository
+                .findBySettingsCompanyIdAndWeekday(companyId, weekday)
+                .orElse(null);
+
+        if (operatingHours == null) {
+            return List.of();
+        }
+
+        if (Boolean.FALSE.equals(operatingHours.getIsActive())) {
             return List.of();
         }
 
@@ -65,7 +72,6 @@ public class SlotsTimesService {
                         && a.getAppointmentStatus() != AppointmentStatus.CANCELLED)
                 .toList();
 
-        OperatingHoursModel operatingHours = hours.getFirst();
         List<SlotTimesDTO> slots = generateSlots(operatingHours, date, appointmentInterval.getMinutes());
 
         return slots.stream()
