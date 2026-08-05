@@ -74,7 +74,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return empty list when date is an off day")
     void findAvailableSlots_shouldReturnEmptyWhenOffDay() {
-        when(offDaysRepository.findByDate(date))
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date))
                 .thenReturn(List.of(new OffDaysModel()));
 
         List<SlotTimesDTO> result = slotsTimesService.findAvailableSlots(companyId, dateStr);
@@ -86,7 +86,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return empty list when no operating hours exist for the day")
     void findAvailableSlots_shouldReturnEmptyWhenNoOperatingHours() {
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekday(WeekDay.THURSDAY)).thenReturn(List.of());
 
@@ -99,7 +99,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return all slots when no appointments are booked")
     void findAvailableSlots_shouldReturnAllSlotsWhenNoneBooked() {
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekday(WeekDay.THURSDAY))
                 .thenReturn(List.of(operatingHours));
@@ -124,7 +124,7 @@ class SlotsTimesServiceTest {
         booked.setAppointmentStatus(AppointmentStatus.PENDING);
         booked.setServices(List.of(service));
 
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekday(WeekDay.THURSDAY))
                 .thenReturn(List.of(operatingHours));
@@ -152,7 +152,7 @@ class SlotsTimesServiceTest {
         cancelled.setAppointmentStatus(AppointmentStatus.CANCELLED);
         cancelled.setServices(List.of(service));
 
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekday(WeekDay.THURSDAY))
                 .thenReturn(List.of(operatingHours));
@@ -176,7 +176,7 @@ class SlotsTimesServiceTest {
         notPaid.setAppointmentStatus(AppointmentStatus.NOT_PAID);
         notPaid.setServices(List.of(service));
 
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekday(WeekDay.THURSDAY))
                 .thenReturn(List.of(operatingHours));
@@ -195,7 +195,7 @@ class SlotsTimesServiceTest {
         operatingHours.setLunchStartTime(LocalTime.of(12, 0));
         operatingHours.setLunchEndTime(LocalTime.of(13, 0));
 
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekday(WeekDay.THURSDAY))
                 .thenReturn(List.of(operatingHours));
@@ -219,7 +219,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return false when date is an off day")
     void isRangeWithinSlots_shouldReturnFalseOnOffDay() {
-        when(offDaysRepository.findByDate(date))
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date))
                 .thenReturn(List.of(new OffDaysModel()));
 
         boolean result = slotsTimesService.isRangeWithinSlots(
@@ -235,7 +235,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return false when no operating hours exist for the day")
     void isRangeWithinSlots_shouldReturnFalseWhenNoOperatingHours() {
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekdayAndSettingsId(WeekDay.THURSDAY, settingsId))
                 .thenReturn(List.of());
@@ -252,7 +252,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return true when range is valid and aligned to interval")
     void isRangeWithinSlots_shouldReturnTrueForValidRange() {
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekdayAndSettingsId(WeekDay.THURSDAY, settingsId))
                 .thenReturn(List.of(operatingHours));
@@ -269,7 +269,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return false when start time is not aligned to interval")
     void isRangeWithinSlots_shouldReturnFalseWhenNotAligned() {
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekdayAndSettingsId(WeekDay.THURSDAY, settingsId))
                 .thenReturn(List.of(operatingHours));
@@ -287,7 +287,7 @@ class SlotsTimesServiceTest {
     @Test
     @DisplayName("Should return false when end time exceeds operating hours")
     void isRangeWithinSlots_shouldReturnFalseWhenEndExceedsHours() {
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekdayAndSettingsId(WeekDay.THURSDAY, settingsId))
                 .thenReturn(List.of(operatingHours));
@@ -308,7 +308,7 @@ class SlotsTimesServiceTest {
         operatingHours.setLunchStartTime(LocalTime.of(12, 0));
         operatingHours.setLunchEndTime(LocalTime.of(13, 0));
 
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekdayAndSettingsId(WeekDay.THURSDAY, settingsId))
                 .thenReturn(List.of(operatingHours));
@@ -329,7 +329,7 @@ class SlotsTimesServiceTest {
         operatingHours.setLunchStartTime(LocalTime.of(12, 0));
         operatingHours.setLunchEndTime(LocalTime.of(13, 0));
 
-        when(offDaysRepository.findByDate(date)).thenReturn(List.of());
+        when(offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date)).thenReturn(List.of());
         when(settingsService.getByCompanyId(companyId)).thenReturn(settings);
         when(operatingHoursRepository.findByWeekdayAndSettingsId(WeekDay.THURSDAY, settingsId))
                 .thenReturn(List.of(operatingHours));
