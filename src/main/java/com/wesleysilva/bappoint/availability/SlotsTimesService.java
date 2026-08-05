@@ -134,37 +134,54 @@ public class SlotsTimesService {
     }
 
     public boolean isRangeWithinSlots(UUID companyId, LocalDate date, LocalDateTime start, LocalDateTime end) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        WeekDay weekday = WeekDay.valueOf(dayOfWeek.name());
+        WeekDay weekday = WeekDay.valueOf(date.getDayOfWeek().name());
 
-        if (!offDaysRepository.findByDate(date).isEmpty()) return false;
+        if (!offDaysRepository.findBySettingsCompanyIdAndDate(companyId, date).isEmpty()) {
+            return false;
+        }
 
         SettingsAllDetailsDTO settings = settingsService.getByCompanyId(companyId);
         int intervalMinutes = settings.getAppointmentInterval().getMinutes();
 
-        List<OperatingHoursModel> hours = operatingHoursRepository
-                .findByWeekdayAndSettingsId(weekday, settings.getId());
-        if (hours.isEmpty()) return false;
+        OperatingHoursModel operatingHours = operatingHoursRepository
+                .findBySettingsCompanyIdAndWeekday(companyId, weekday)
+                .orElse(null);
 
-        OperatingHoursModel oh = hours.getFirst();
-        LocalDateTime dayStart = date.atTime(oh.getStartTime());
-        LocalDateTime dayEnd = date.atTime(oh.getEndTime());
-
-        long startMinutes = ChronoUnit.MINUTES.between(dayStart, start);
-        if (startMinutes % intervalMinutes != 0 || start.isBefore(dayStart) || start.isAfter(dayEnd)) {
+        if (operatingHours == null || Boolean.FALSE.equals(operatingHours.getIsActive())) {
             return false;
         }
 
-        if (end.isAfter(dayEnd)) return false;
+        LocalDateTime dayStart = date.atTime(operatingHours.getStartTime());
+        LocalDateTime dayEnd = date.atTime(operatingHours.getEndTime());
 
-        LocalTime lunchStart = oh.getLunchStartTime();
-        LocalTime lunchEnd = oh.getLunchEndTime();
+        long startMinutes = ChronoUnit.MINUTES.between(dayStart, start);
+
+        if (startMinutes < 0 || startMinutes % intervalMinutes != 0) {
+            return false;
+        }
+
+        if (start.isBefore(dayStart) || !start.isBefore(dayEnd)) {
+            return false;
+        }
+
+        if (!end.isAfter(start) || end.isAfter(dayEnd)) {
+            return false;
+        }
+
+        LocalTime lunchStart = operatingHours.getLunchStartTime();
+        LocalTime lunchEnd = operatingHours.getLunchEndTime();
+
         if (lunchStart != null && lunchEnd != null) {
             LocalDateTime lunchFrom = date.atTime(lunchStart);
             LocalDateTime lunchTo = date.atTime(lunchEnd);
-            return !start.isBefore(lunchTo) || !end.isAfter(lunchFrom);
+
+            boolean intersectsLunch = start.isBefore(lunchTo) && end.isAfter(lunchFrom);
+            if (intersectsLunch) {
+                return false;
+            }
         }
 
         return true;
     }
+
 }
