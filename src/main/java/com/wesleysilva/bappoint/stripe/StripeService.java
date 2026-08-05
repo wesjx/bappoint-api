@@ -35,6 +35,7 @@ public class StripeService {
 
     private final AppointmentRepository appointmentRepository;
     private final CompanyRepository companyRepository;
+    private static final BigDecimal PLATFORM_FEE_PERCENT = BigDecimal.valueOf(3.1);
 
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
@@ -93,9 +94,18 @@ public class StripeService {
                 ? company.getDepositPercentage().divide(BigDecimal.valueOf(100))
                 : BigDecimal.valueOf(0.5);
 
-        BigDecimal halfAmount = totalAmount.multiply(percentage);
-        long totalCents = halfAmount
+        BigDecimal depositAmount = totalAmount.multiply(percentage);
+
+        long totalCents = depositAmount
                 .setScale(2, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .longValue();
+
+        BigDecimal platformFeeAmount = depositAmount
+                .multiply(PLATFORM_FEE_PERCENT)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+        long applicationFeeCents = platformFeeAmount
                 .multiply(BigDecimal.valueOf(100))
                 .longValue();
 
@@ -142,6 +152,7 @@ public class StripeService {
                 // STRIPE CONNECT
                 .setPaymentIntentData(
                         SessionCreateParams.PaymentIntentData.builder()
+                                .setApplicationFeeAmount(applicationFeeCents)
                                 .setTransferData(
                                         SessionCreateParams.PaymentIntentData.TransferData.builder()
                                                 .setDestination(company.getStripeAccountId())
