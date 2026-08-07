@@ -1,6 +1,8 @@
 package com.wesleysilva.bappoint.stripe;
 
+import com.wesleysilva.bappoint.publicaction.PublicActionTokenService;
 import com.wesleysilva.bappoint.stripe.dto.PaymentRequestDTO;
+import com.wesleysilva.bappoint.stripe.dto.PublicConnectLinkResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +18,12 @@ import java.util.UUID;
 public class StripeController {
 
     private final StripeService stripeService;
+    private final PublicActionTokenService publicActionTokenService;
 
-    public StripeController(StripeService stripeService) {
+    public StripeController(StripeService stripeService,
+                            PublicActionTokenService publicActionTokenService) {
         this.stripeService = stripeService;
+        this.publicActionTokenService = publicActionTokenService;
     }
 
     @PostMapping("/checkout-session")
@@ -67,6 +72,14 @@ public class StripeController {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @PostMapping("/connect/public-link")
+    @PreAuthorize("hasRole('MASTER')")
+    public ResponseEntity<PublicConnectLinkResponseDTO> createPublicConnectLink(@PathVariable UUID companyId) {
+        String rawToken = publicActionTokenService.createStripeConnectOnboardingToken(companyId);
+        String url = stripeService.buildPublicConnectEntryUrl(rawToken);
+        return ResponseEntity.ok(new PublicConnectLinkResponseDTO(url));
     }
 
 
