@@ -46,6 +46,8 @@ public class StripeService {
     @Value("${app.master.frontend-url}")
     private String masterFrontendUrl;
 
+    @Value("${app.api.base-url}")
+    private String apiBaseUrl;
 
     public StripeService(AppointmentRepository appointmentRepository,
                          CompanyRepository companyRepository) {
@@ -401,8 +403,8 @@ public class StripeService {
 
             AccountLinkCreateParams params = AccountLinkCreateParams.builder()
                     .setAccount(company.getStripeAccountId())
-                    .setRefreshUrl("https://api.bappoint.com/public/stripe/connect/onboarding/refresh?token=" + rawToken)
-                    .setReturnUrl("https://api.bappoint.com/public/stripe/connect/onboarding/complete?token=" + rawToken)
+                    .setRefreshUrl(apiBaseUrl + "/public/stripe/connect/onboarding/refresh?token=" + rawToken)
+                    .setReturnUrl(apiBaseUrl + "/public/stripe/connect/onboarding/complete?token=" + rawToken)
                     .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                     .build();
 
@@ -415,6 +417,7 @@ public class StripeService {
             throw new RuntimeException("Error creating Stripe connect onboarding link.", e);
         }
     }
+
 
 
 
