@@ -337,7 +337,7 @@ public class StripeService {
     }
 
     public String buildPublicConnectEntryUrl(String rawToken) {
-        return masterFrontendUrl + "/connect/onboarding?token=" + rawToken;
+        return apiBaseUrl + "/public/stripe/connect/onboarding?token=" + rawToken;
     }
 
     public void syncConnectStatus(UUID companyId) {
