@@ -303,7 +303,7 @@ public class StripeService {
         boolean payoutsEnabled = Boolean.TRUE.equals(account.getPayoutsEnabled());
 
         if (chargesEnabled && payoutsEnabled) {
-            company.setPaymentSetupStatus(PaymentSetupStatus.CONNECTED);
+            company.setPaymentSetupStatus(PaymentSetupStatus.COMPLETED);
 
             if (company.getStripeConnectedAt() == null) {
                 company.setStripeConnectedAt(java.time.Instant.now());
@@ -333,6 +333,89 @@ public class StripeService {
                 company.getStripeAccountId(),
                 company.getPaymentSetupStatus());
     }
+
+    public String buildPublicConnectEntryUrl(String rawToken) {
+        return masterFrontendUrl + "/connect/onboarding?token=" + rawToken;
+    }
+
+    public void syncConnectStatus(UUID companyId) {
+        CompanyModel company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new IllegalArgumentException("Company not found."));
+
+        syncConnectStatus(company);
+    }
+
+    public void syncConnectStatus(CompanyModel company) {
+        try {
+            if (company.getStripeAccountId() == null || company.getStripeAccountId().isBlank()) {
+                company.setPaymentSetupStatus(PaymentSetupStatus.PENDING);
+                companyRepository.save(company);
+                return;
+            }
+
+            Account account = Account.retrieve(company.getStripeAccountId());
+
+            boolean completed = Boolean.TRUE.equals(account.getDetailsSubmitted())
+                    && Boolean.TRUE.equals(account.getChargesEnabled())
+                    && Boolean.TRUE.equals(account.getPayoutsEnabled());
+
+            if (completed) {
+                company.setPaymentSetupStatus(PaymentSetupStatus.COMPLETED);
+                company.setStripeConnectedAt(java.time.Instant.now());
+                company.setStripeConnectionError(null);
+            } else {
+                company.setPaymentSetupStatus(PaymentSetupStatus.PENDING);
+                company.setStripeConnectionError(
+                        account.getRequirements() != null
+                                ? String.join(", ", account.getRequirements().getCurrentlyDue())
+                                : null
+                );
+            }
+
+            companyRepository.save(company);
+        } catch (StripeException e) {
+            company.setPaymentSetupStatus(PaymentSetupStatus.ERROR);
+            company.setStripeConnectionError(e.getMessage());
+            companyRepository.save(company);
+            throw new RuntimeException("Error syncing Stripe connect status.", e);
+        }
+    }
+
+    public String createConnectLinkFromPublicToken(UUID companyId, String rawToken) {
+        CompanyModel company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new IllegalArgumentException("Company not found."));
+
+        try {
+            if (company.getStripeAccountId() == null || company.getStripeAccountId().isBlank()) {
+                AccountCreateParams accountParams = AccountCreateParams.builder()
+                        .setType(AccountCreateParams.Type.EXPRESS)
+                        .setCountry("IE")
+                        .setEmail(company.getEmail())
+                        .build();
+
+                Account account = Account.create(accountParams);
+                company.setStripeAccountId(account.getId());
+                company.setPaymentSetupStatus(PaymentSetupStatus.PENDING);
+                companyRepository.save(company);
+            }
+
+            AccountLinkCreateParams params = AccountLinkCreateParams.builder()
+                    .setAccount(company.getStripeAccountId())
+                    .setRefreshUrl("https://api.bappoint.com/public/stripe/connect/onboarding/refresh?token=" + rawToken)
+                    .setReturnUrl("https://api.bappoint.com/public/stripe/connect/onboarding/complete?token=" + rawToken)
+                    .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
+                    .build();
+
+            AccountLink accountLink = AccountLink.create(params);
+            return accountLink.getUrl();
+        } catch (StripeException e) {
+            company.setPaymentSetupStatus(PaymentSetupStatus.ERROR);
+            company.setStripeConnectionError(e.getMessage());
+            companyRepository.save(company);
+            throw new RuntimeException("Error creating Stripe connect onboarding link.", e);
+        }
+    }
+
 
 
 }

@@ -4,5 +4,6 @@ public enum PaymentSetupStatus {
     PENDING,
     CONNECTED,
     ERROR,
-    NOT_CONNECTED
+    NOT_CONNECTED,
+    COMPLETED
 }
