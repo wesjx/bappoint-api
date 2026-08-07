@@ -53,8 +53,10 @@ public class SecurityConfig {
                                 "/stripe/checkout-session",
                                 "/companies/*/stripe/checkout-session",
                                 "/stripe/webhook",
+                                "/stripe/webhook/connect",
                                 "/companies/*/stripe/checkout-session/*",
-                                "/public/stripe/connect/*"
+                                "/public/stripe/connect/**",
+                                "/public/stripe/connect/setup/**"
                         ).permitAll()
                         .requestMatchers("/companies/create").hasRole("MASTER")
                         .requestMatchers("/companies/delete/**").hasRole("MASTER")
