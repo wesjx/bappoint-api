@@ -1,6 +1,7 @@
 package com.wesleysilva.bappoint.appointments;
 
 import com.wesleysilva.bappoint.appointments.dto.*;
+import com.wesleysilva.bappoint.appointments.mensaging.AppointmentProducer;
 import com.wesleysilva.bappoint.appointments.records.ServiceDetailsResult;
 import com.wesleysilva.bappoint.availability.SlotsTimesService;
 import com.wesleysilva.bappoint.company.CompanyRepository;
@@ -35,14 +36,16 @@ public class AppointmentService {
     private final SettingsService settingsService;
     private final ServiceRepository serviceRepository;
     private final SlotsTimesService slotsTimesService;
+    private final AppointmentProducer appointmentProducer;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, CompanyRepository companyRepository, SettingsService settingsService, ServiceRepository serviceRepository, SlotsTimesService slotsTimesService) {
+    public AppointmentService(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, CompanyRepository companyRepository, SettingsService settingsService, ServiceRepository serviceRepository, SlotsTimesService slotsTimesService, AppointmentProducer appointmentProducer) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
         this.companyRepository = companyRepository;
         this.settingsService = settingsService;
         this.serviceRepository = serviceRepository;
         this.slotsTimesService = slotsTimesService;
+        this.appointmentProducer = appointmentProducer;
     }
 
     private List<ServiceModel> getServicesByIds(List<UUID> serviceIds, UUID settingsId) {
@@ -311,6 +314,7 @@ public class AppointmentService {
             appointment.setStripeSessionId(null);
             appointment.setPaymentDeadline(null);
             appointment.setCreatedAt(LocalDateTime.now());
+            appointmentProducer.publishEvent(appointment);
 
             AppointmentModel savedAppointment = appointmentRepository.saveAndFlush(appointment);
             return appointmentMapper.toCreateAppointmentManualDTO(savedAppointment);
