@@ -18,7 +18,7 @@ public class AppointmentExpirationScheduler {
 
     private final AppointmentRepository appointmentRepository;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 900000)
     public void cancelExpiredAppointments() {
 
         List<AppointmentModel> expired =
