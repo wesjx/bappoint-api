@@ -9,6 +9,7 @@ import com.stripe.param.AccountLinkCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.wesleysilva.bappoint.appointments.AppointmentModel;
 import com.wesleysilva.bappoint.appointments.AppointmentRepository;
+import com.wesleysilva.bappoint.appointments.mensaging.AppointmentProducer;
 import com.wesleysilva.bappoint.company.CompanyModel;
 import com.wesleysilva.bappoint.company.CompanyRepository;
 import com.wesleysilva.bappoint.enums.PaymentSetupStatus;
@@ -35,6 +36,7 @@ public class StripeService {
 
     private final AppointmentRepository appointmentRepository;
     private final CompanyRepository companyRepository;
+    private final AppointmentProducer appointmentProducer;
     private static final BigDecimal PLATFORM_FEE_PERCENT = BigDecimal.valueOf(3.1);
 
     @Value("${stripe.secret.key}")
@@ -50,9 +52,11 @@ public class StripeService {
     private String apiBaseUrl;
 
     public StripeService(AppointmentRepository appointmentRepository,
-                         CompanyRepository companyRepository) {
+                         CompanyRepository companyRepository,
+                         AppointmentProducer appointmentProducer) {
         this.appointmentRepository = appointmentRepository;
         this.companyRepository = companyRepository;
+        this.appointmentProducer = appointmentProducer;
     }
 
     @PostConstruct
@@ -204,6 +208,9 @@ public class StripeService {
                     .orElseThrow(AppointmentNotFoundException::new);
 
             appointment.setAppointmentStatus(AppointmentStatus.PAID);
+
+            appointmentProducer.publishEvent(appointment);
+
             appointment.setStripeSessionId(session.getId());
             appointmentRepository.save(appointment);
 
