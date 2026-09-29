@@ -75,6 +75,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/bappoint_dev
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      APP_FRONTEND_ROOT_DOMAIN: ${APP_FRONTEND_ROOT_DOMAIN}
+      APP_API_BASE_URL: ${APP_API_BASE_URL}
 volumes:
   db-data:
 
